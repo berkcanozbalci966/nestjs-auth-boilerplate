@@ -12,10 +12,10 @@ datasource db {
 
 model User {
   id         Int      @id @default(autoincrement())
-  username   String   @unique @db.VarChar(20)
+  username   String?  @unique @db.VarChar(20)
   email      String   @unique @db.VarChar(30)
   password   String   @db.VarChar(60)
-  name       String   @db.VarChar(30)
-  surname    String   @db.VarChar(30)
+  name       String?  @db.VarChar(30)
+  surname    String?  @db.VarChar(30)
   created_at DateTime @default(now())
 }
