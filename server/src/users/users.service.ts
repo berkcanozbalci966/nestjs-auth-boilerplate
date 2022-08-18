@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
 
@@ -11,6 +11,22 @@ export class UsersService {
   ): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
+    });
+  }
+
+  async getUserWithUsername(username: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+  }
+
+  async getUserWithEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        email,
+      },
     });
   }
 
@@ -31,15 +47,18 @@ export class UsersService {
     });
   }
 
-  async getUserListWithoutParams(): Promise<User | null> {
-    //@ts-ignore
+  async getUserListWithoutParams(): Promise<User[] | null[]> {
     return this.prisma.user.findMany();
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({
-      data,
-    });
+    return this.prisma.user
+      .create({
+        data,
+      })
+      .catch(() => {
+        throw new BadRequestException('Email or username exists!');
+      });
   }
 
   async updateUser(params: {
