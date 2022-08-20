@@ -4,6 +4,7 @@ import { Prisma, User } from '@prisma/client';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -11,9 +12,10 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private configService: ConfigService,
+    private jwtService: JwtService,
   ) {}
 
-  async signin(userInfo: SignInUserDto): Promise<User> {
+  async validateUser(userInfo: SignInUserDto): Promise<User> {
     let user!: any;
 
     if (userInfo.username) {
@@ -28,7 +30,7 @@ export class AuthService {
       throw new BadRequestException('Check idendity');
     }
 
-    const passwordIsMatched = await bcrypt.compare(
+    const passwordIsMatched: boolean = await bcrypt.compare(
       userInfo.password,
       user.password,
     );
@@ -36,8 +38,17 @@ export class AuthService {
     if (!passwordIsMatched) {
       throw new BadRequestException('Password is not matched!');
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userPayload } = user;
 
-    return user;
+    return userPayload;
+  }
+
+  async login(user: any) {
+    const payload = { username: user.name, sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   async signup(userInfo: CreateUserDto) {
@@ -57,7 +68,7 @@ export class AuthService {
       throw new BadRequestException('Email is exists');
     }
 
-    const hashedPassword = await bcrypt.hash(
+    const hashedPassword: unknown = await bcrypt.hash(
       userInfo.password,
       parseInt(this.configService.get('BCRYPT_SALT_ROUND')),
     );

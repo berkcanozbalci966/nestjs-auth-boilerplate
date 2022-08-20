@@ -2,6 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
 
+const userSelect = {
+  select: {
+    username: true,
+    id: true,
+    password: true,
+  },
+};
+
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -19,6 +27,7 @@ export class UsersService {
       where: {
         username,
       },
+      ...userSelect,
     });
   }
 
@@ -27,6 +36,7 @@ export class UsersService {
       where: {
         email,
       },
+      ...userSelect,
     });
   }
 

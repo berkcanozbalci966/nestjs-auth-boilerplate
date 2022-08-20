@@ -1,8 +1,16 @@
 import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { SignInUserDto } from './dto/sign-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -18,8 +26,9 @@ export class AuthController {
     return this.authService.signup(body as Prisma.UserCreateInput);
   }
 
+  @UseGuards(AuthGuard('local'))
   @Post('/signin')
-  async signin(@Body() body: SignInUserDto) {
-    return this.authService.signin(body);
+  async login(@Request() req: any) {
+    return this.authService.login(req.user);
   }
 }

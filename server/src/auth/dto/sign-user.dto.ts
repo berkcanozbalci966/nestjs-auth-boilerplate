@@ -1,15 +1,25 @@
-import { IsEmail, IsNotEmpty, IsString, Length, Min } from 'class-validator';
+import { Exclude } from 'class-transformer';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class SignInUserDto {
   @IsEmail()
+  @IsOptional()
   email?: string;
 
   @IsString()
-  @Length(8, 30)
+  @IsOptional()
+  @Length(6, 30)
   username?: string;
 
   @IsNotEmpty()
   @IsString()
   @Length(8, 30)
+  @Exclude()
   password: string;
 }
