@@ -4,10 +4,11 @@ services:
     image: node:16-alpine
     container_name: backend
     restart: always
-    command: sh -c "yarn && yarn docker:dev"
+    command: sh -c "yarn && yarn start:dev"
     ports:
       - 3600:3600
       - 5555:5555
+      - 9229:9229
     working_dir: /app
     links:
       - postgres
