@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -16,15 +16,14 @@ export class AuthService {
     const user = await this.usersService.getUserWithUsername(username);
 
     if (!user) {
-      throw new BadRequestException('Bad request');
+      throw new UnauthorizedException();
     }
 
     const isPasswordMatched = await bcrypt.compare(pass, user.password);
 
     if (!isPasswordMatched) {
-      throw new BadRequestException('');
+      throw new UnauthorizedException();
     }
-    user;
     return user;
   }
 
