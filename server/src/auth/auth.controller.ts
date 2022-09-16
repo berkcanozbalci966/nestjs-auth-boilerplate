@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from './jwt-auth.guard';
+
 import { Public } from './decorators/public.decorator';
 import { RtGuard, AtGuard } from '../common/guards';
 
@@ -39,6 +39,8 @@ export class AuthController {
   @Post('refresh')
   refreshTokens(@Request() req: any) {
     console.log(req.user);
+
+    return this.authService.getAccessToken(req.user.sub);
   }
 
   @UseGuards(AtGuard)

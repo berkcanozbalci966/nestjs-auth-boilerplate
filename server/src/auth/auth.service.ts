@@ -13,6 +13,17 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  async createUser(userInfo: any) {
+    const hashedPassword = await bcrypt.hash(
+      userInfo.password,
+      parseInt(this.configService.get('BCRYPT_SALT_ROUND')),
+    );
+
+    const userPayload = Object.assign(userInfo, { password: hashedPassword });
+
+    return await this.usersService.createUser(userPayload);
+  }
+
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.getUserWithUsername(username);
 
@@ -28,37 +39,15 @@ export class AuthService {
     return user;
   }
 
-  async createUser(userInfo: any) {
-    const hashedPassword = await bcrypt.hash(
-      userInfo.password,
-      parseInt(this.configService.get('BCRYPT_SALT_ROUND')),
-    );
-
-    const userPayload = Object.assign(userInfo, { password: hashedPassword });
-
-    return await this.usersService.createUser(userPayload);
-  }
-
   async login(user: any) {
     console.log(user);
-    return await this.getToken(user.id, user.username);
+    return await this.getToken(user.id);
   }
 
-  async getToken(userId, email) {
-    const jwtPayload = {
-      sub: userId,
-      email,
-    };
-
+  async getToken(userId) {
     const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(jwtPayload, {
-        secret: jwtConstants.at_secret,
-        expiresIn: '30s',
-      }),
-      this.jwtService.signAsync(jwtPayload, {
-        secret: jwtConstants.rt_secret,
-        expiresIn: '7d',
-      }),
+      this.getAccessToken(userId),
+      this.getRefreshToken(userId),
     ]);
 
     return {
@@ -67,5 +56,25 @@ export class AuthService {
     };
   }
 
-  async getAccessToken(userId) {}
+  getAccessToken(userId) {
+    const jwtPayload = {
+      sub: userId,
+    };
+
+    return this.jwtService.signAsync(jwtPayload, {
+      secret: jwtConstants.at_secret,
+      expiresIn: '30s',
+    });
+  }
+
+  getRefreshToken(userId) {
+    const jwtPayload = {
+      sub: userId,
+    };
+
+    return this.jwtService.signAsync(jwtPayload, {
+      secret: jwtConstants.rt_secret,
+      expiresIn: '7d',
+    });
+  }
 }
