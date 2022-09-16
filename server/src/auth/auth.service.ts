@@ -66,4 +66,6 @@ export class AuthService {
       refreshToken: rt,
     };
   }
+
+  async getAccessToken(userId) {}
 }

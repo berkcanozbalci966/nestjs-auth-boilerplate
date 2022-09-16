@@ -14,11 +14,18 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { Public } from './decorators/public.decorator';
+import { RtGuard, AtGuard } from '../common/guards';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Public()
+  @Post('/signup')
+  async register(@Body() body: any): Promise<UserEntity> {
+    return new UserEntity(await this.authService.createUser(body));
+  }
 
   @UseGuards(AuthGuard('local'))
   @Public()
@@ -28,12 +35,13 @@ export class AuthController {
   }
 
   @Public()
-  @Post('/signup')
-  async register(@Body() body: any): Promise<UserEntity> {
-    return new UserEntity(await this.authService.createUser(body));
+  @UseGuards(RtGuard)
+  @Post('refresh')
+  refreshTokens(@Request() req: any) {
+    console.log(req.user);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AtGuard)
   @Get('profile')
   getProfile(@Request() req: any) {
     return req.user;
