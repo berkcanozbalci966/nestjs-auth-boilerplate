@@ -11,10 +11,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { AuthGuard } from '@nestjs/passport';
-
-import { Public } from './decorators/public.decorator';
-import { RtGuard, AtGuard } from '../common/guards';
+import { Public } from '../common/decorators/public.decorator';
+import { RtGuard } from '../common/guards';
+import { AuthDto } from './dto/auth.dto';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -27,23 +26,19 @@ export class AuthController {
     return new UserEntity(await this.authService.createUser(body));
   }
 
-  @UseGuards(AuthGuard('local'))
   @Public()
   @Post('/login')
-  async login(@Request() req: any) {
-    return this.authService.login(req.user);
+  async login(@Body() dto: AuthDto) {
+    return this.authService.login(dto);
   }
 
   @Public()
   @UseGuards(RtGuard)
   @Post('refresh')
   refreshTokens(@Request() req: any) {
-    console.log(req.user);
-
     return this.authService.getAccessToken(req.user.sub);
   }
 
-  @UseGuards(AtGuard)
   @Get('profile')
   getProfile(@Request() req: any) {
     return req.user;

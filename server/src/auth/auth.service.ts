@@ -1,9 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './../users/users.service';
 import * as bcrypt from 'bcrypt';
+import isEmail from 'validator/lib/isEmail';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constant';
+import { LoginTokens } from './types/token.type';
+import { AuthDto } from './dto/auth.dto';
+import { UserSelect } from './types/user.type';
 
 @Injectable()
 export class AuthService {
@@ -24,14 +28,22 @@ export class AuthService {
     return await this.usersService.createUser(userPayload);
   }
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.getUserWithUsername(username);
+  async validateUser(authDto: AuthDto): Promise<any> {
+    let user: UserSelect;
+
+    if (isEmail(authDto.usernameOrEmail)) {
+      user = await this.usersService.getUserWithEmail(authDto.usernameOrEmail);
+    } else {
+      user = await this.usersService.getUserWithUsername(
+        authDto.usernameOrEmail,
+      );
+    }
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    const isPasswordMatched = await bcrypt.compare(pass, user.password);
+    const isPasswordMatched = bcrypt.compare(authDto.password, user.password);
 
     if (!isPasswordMatched) {
       throw new UnauthorizedException();
@@ -39,12 +51,13 @@ export class AuthService {
     return user;
   }
 
-  async login(user: any) {
-    console.log(user);
+  async login(authDto: AuthDto) {
+    const user = await this.validateUser(authDto);
+
     return await this.getToken(user.id);
   }
 
-  async getToken(userId) {
+  async getToken(userId): Promise<LoginTokens> {
     const [at, rt] = await Promise.all([
       this.getAccessToken(userId),
       this.getRefreshToken(userId),
@@ -56,7 +69,7 @@ export class AuthService {
     };
   }
 
-  getAccessToken(userId) {
+  getAccessToken(userId): Promise<string> {
     const jwtPayload = {
       sub: userId,
     };
@@ -67,7 +80,7 @@ export class AuthService {
     });
   }
 
-  getRefreshToken(userId) {
+  getRefreshToken(userId): Promise<string> {
     const jwtPayload = {
       sub: userId,
     };
