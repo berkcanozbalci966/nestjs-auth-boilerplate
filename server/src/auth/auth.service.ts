@@ -3,6 +3,7 @@ import { UsersService } from './../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from './constant';
 
 @Injectable()
 export class AuthService {
@@ -39,10 +40,30 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+    console.log(user);
+    return await this.getToken(user.id, user.username);
+  }
+
+  async getToken(userId, email) {
+    const jwtPayload = {
+      sub: userId,
+      email,
+    };
+
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(jwtPayload, {
+        secret: jwtConstants.at_secret,
+        expiresIn: '30s',
+      }),
+      this.jwtService.signAsync(jwtPayload, {
+        secret: jwtConstants.rt_secret,
+        expiresIn: '7d',
+      }),
+    ]);
 
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: at,
+      refreshToken: rt,
     };
   }
 }
