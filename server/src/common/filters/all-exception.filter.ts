@@ -29,7 +29,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         statusCode: httpStatus,
         timestamp: new Date().toISOString(),
       },
-
       Body: {
         message:
           exception instanceof HttpException

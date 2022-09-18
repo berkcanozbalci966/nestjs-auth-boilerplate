@@ -53,7 +53,9 @@ export class AuthService {
 
   async login(authDto: AuthDto) {
     const user = await this.validateUser(authDto);
+    const { refreshToken } = await this.getToken(user.id);
 
+    await this.usersService.addNewRefreshToken(user.id, refreshToken);
     return await this.getToken(user.id);
   }
 

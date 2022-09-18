@@ -86,4 +86,29 @@ export class UsersService {
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prisma.user.delete({ where });
   }
+
+  async addNewRefreshToken(id, refreshToken) {
+    return await this.prisma.token.create({
+      data: {
+        userId: id,
+        token: refreshToken,
+      },
+    });
+  }
+
+  async removeAllRefreshTokenWithUserId(userId) {
+    return await this.prisma.token.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
+  async findRefreshToken(refreshToken) {
+    return await this.prisma.token.findUnique({
+      where: {
+        token: refreshToken,
+      },
+    });
+  }
 }
