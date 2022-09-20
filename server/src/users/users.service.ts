@@ -40,13 +40,7 @@ export class UsersService {
     });
   }
 
-  async getUserList(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<User[] | null> {
+  async getUserList(params: Prisma.UserFindManyArgs): Promise<User[] | null> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.user.findMany({
       skip,
@@ -71,10 +65,7 @@ export class UsersService {
       });
   }
 
-  async updateUser(params: {
-    where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
-  }): Promise<User> {
+  async updateUser(params: Prisma.UserUpdateArgs): Promise<User> {
     const { where, data } = params;
 
     return this.prisma.user.update({
@@ -108,6 +99,14 @@ export class UsersService {
     return await this.prisma.token.findUnique({
       where: {
         token: refreshToken,
+      },
+    });
+  }
+
+  async getUserTokenCount(userId) {
+    return await this.prisma.token.count({
+      where: {
+        userId,
       },
     });
   }

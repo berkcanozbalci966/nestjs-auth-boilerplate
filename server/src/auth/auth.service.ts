@@ -43,7 +43,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const isPasswordMatched = bcrypt.compare(authDto.password, user.password);
+    const isPasswordMatched = (await bcrypt.compare(
+      authDto.password,
+      user.password,
+    )) as boolean;
 
     if (!isPasswordMatched) {
       throw new UnauthorizedException();
@@ -53,9 +56,17 @@ export class AuthService {
 
   async login(authDto: AuthDto) {
     const user = await this.validateUser(authDto);
+
     const { refreshToken } = await this.getToken(user.id);
 
+    const userTokenCount = await this.usersService.getUserTokenCount(user.id);
+
+    if (userTokenCount > 0) {
+      await this.usersService.removeAllRefreshTokenWithUserId(user.id);
+    }
+
     await this.usersService.addNewRefreshToken(user.id, refreshToken);
+
     return await this.getToken(user.id);
   }
 
