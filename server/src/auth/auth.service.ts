@@ -46,7 +46,7 @@ export class AuthService {
     const isPasswordMatched = (await bcrypt.compare(
       authDto.password,
       user.password,
-    )) as boolean;
+    )) as unknown as boolean;
 
     if (!isPasswordMatched) {
       throw new UnauthorizedException();

@@ -8,6 +8,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import fastifyHelmet from '@fastify/helmet';
+import fastifyCookie from 'fastify-cookie';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -28,7 +29,26 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  app.register(fastifyHelmet, {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: [`'self'`],
+        styleSrc: [`'self'`, `'unsafe-inline'`],
+        imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+        scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+      },
+    },
+  });
+
+  // If you are not going to use CSP at all, you can use this:
+  app.register(fastifyHelmet, {
+    contentSecurityPolicy: false,
+  });
+
+  await app.register(fastifyCookie, {
+    secret: 'my-secret', // for cookies signature
+  });
+
   await app.listen(3600, '0.0.0.0');
-  console.log('listening!');
 }
 bootstrap();

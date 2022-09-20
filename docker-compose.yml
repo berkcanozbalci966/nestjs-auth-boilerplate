@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   backend:
-    image: node:16-alpine
+    image: node:16
     container_name: backend
     restart: always
     command: sh -c "yarn && yarn docker:dev"
@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       PGDATA: /data/postgres
     volumes:
-       - postgres:/data/postgres
+      - postgres:/data/postgres
     ports:
       - "5432:5432"
     restart: unless-stopped
