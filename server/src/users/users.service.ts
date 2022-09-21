@@ -87,7 +87,7 @@ export class UsersService {
     });
   }
 
-  async removeAllRefreshTokenWithUserId(userId) {
+  async removeAllRefreshTokenWithUserId(userId: number) {
     return await this.prisma.token.deleteMany({
       where: {
         userId,
@@ -95,7 +95,7 @@ export class UsersService {
     });
   }
 
-  async findRefreshToken(refreshToken) {
+  async findRefreshToken(refreshToken: string) {
     return await this.prisma.token.findUnique({
       where: {
         token: refreshToken,
@@ -103,7 +103,7 @@ export class UsersService {
     });
   }
 
-  async getUserTokenCount(userId) {
+  async getUserTokenCount(userId: number) {
     return await this.prisma.token.count({
       where: {
         userId,

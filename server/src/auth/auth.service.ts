@@ -6,8 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constant';
 import { LoginTokens } from './types/token.type';
-import { AuthDto } from './dto/auth.dto';
-import { UserSelect } from './types/user.type';
+import { UserLoginParams, UserSelect } from './types/user.type';
 
 @Injectable()
 export class AuthService {
@@ -28,14 +27,16 @@ export class AuthService {
     return await this.usersService.createUser(userPayload);
   }
 
-  async validateUser(authDto: AuthDto): Promise<any> {
+  async validateUser(userLoginParams: UserLoginParams): Promise<any> {
     let user: UserSelect;
 
-    if (isEmail(authDto.usernameOrEmail)) {
-      user = await this.usersService.getUserWithEmail(authDto.usernameOrEmail);
+    if (isEmail(userLoginParams.usernameOrEmail)) {
+      user = await this.usersService.getUserWithEmail(
+        userLoginParams.usernameOrEmail,
+      );
     } else {
       user = await this.usersService.getUserWithUsername(
-        authDto.usernameOrEmail,
+        userLoginParams.usernameOrEmail,
       );
     }
 
@@ -44,7 +45,7 @@ export class AuthService {
     }
 
     const isPasswordMatched = (await bcrypt.compare(
-      authDto.password,
+      userLoginParams.password,
       user.password,
     )) as unknown as boolean;
 
@@ -54,8 +55,8 @@ export class AuthService {
     return user;
   }
 
-  async login(authDto: AuthDto) {
-    const user = await this.validateUser(authDto);
+  async login(userLoginParams: UserLoginParams) {
+    const user = await this.validateUser(userLoginParams);
 
     const { refreshToken } = await this.getToken(user.id);
 
@@ -70,7 +71,7 @@ export class AuthService {
     return await this.getToken(user.id);
   }
 
-  async getToken(userId): Promise<LoginTokens> {
+  async getToken(userId: number): Promise<LoginTokens> {
     const [at, rt] = await Promise.all([
       this.getAccessToken(userId),
       this.getRefreshToken(userId),
@@ -82,7 +83,7 @@ export class AuthService {
     };
   }
 
-  getAccessToken(userId): Promise<string> {
+  getAccessToken(userId: number): Promise<string> {
     const jwtPayload = {
       sub: userId,
     };
@@ -93,7 +94,7 @@ export class AuthService {
     });
   }
 
-  getRefreshToken(userId): Promise<string> {
+  getRefreshToken(userId: number): Promise<string> {
     const jwtPayload = {
       sub: userId,
     };
