@@ -36,8 +36,11 @@ export class AuthController {
     @Res({ passthrough: true }) response,
   ) {
     console.log(request.cookies);
-    response.setCookie('Yeah', 'hell');
-    const tokens = this.authService.login(dto);
+
+    const tokens = await this.authService.login(dto);
+
+    response.setCookie('__SYSTEM__', tokens.refreshToken);
+
     return tokens;
   }
 
