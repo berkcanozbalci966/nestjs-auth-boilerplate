@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { UsersService } from './../users/users.service';
 import * as bcrypt from 'bcrypt';
 import isEmail from 'validator/lib/isEmail';
@@ -58,17 +62,29 @@ export class AuthService {
   async login(userLoginParams: UserLoginParams) {
     const user = await this.validateUser(userLoginParams);
 
-    const { refreshToken } = await this.getToken(user.id);
+    const { refreshToken, accessToken } = await this.getToken(user.id);
 
     const userTokenCount = await this.usersService.getUserTokenCount(user.id);
 
-    if (userTokenCount > 0) {
+    if (userTokenCount > 1) {
       await this.usersService.removeAllRefreshTokenWithUserId(user.id);
     }
 
     await this.usersService.addNewRefreshToken(user.id, refreshToken);
 
-    return await this.getToken(user.id);
+    return { refreshToken: this.encodeToken(refreshToken), accessToken };
+  }
+
+  async refreshAccessToken(userId: number, refreshToken: string) {
+    const refreshTokenIsFounded = await this.usersService.findRefreshToken(
+      refreshToken,
+    );
+
+    if (!refreshTokenIsFounded) {
+      throw new BadRequestException();
+    }
+
+    return await this.getAccessToken(userId);
   }
 
   async getToken(userId: number): Promise<LoginTokens> {
@@ -103,5 +119,10 @@ export class AuthService {
       secret: jwtConstants.rt_secret,
       expiresIn: '7d',
     });
+  }
+
+  encodeToken(token: string) {
+    const buf = Buffer.from(token).toString('base64');
+    return buf;
   }
 }

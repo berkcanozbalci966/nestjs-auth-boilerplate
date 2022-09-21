@@ -78,7 +78,7 @@ export class UsersService {
     return this.prisma.user.delete({ where });
   }
 
-  async addNewRefreshToken(id, refreshToken) {
+  async addNewRefreshToken(id: number, refreshToken: string) {
     return await this.prisma.token.create({
       data: {
         userId: id,

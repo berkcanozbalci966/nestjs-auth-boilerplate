@@ -6,9 +6,11 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   Request,
   UseGuards,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 
 import { Public } from '../common/decorators/public.decorator';
@@ -28,19 +30,29 @@ export class AuthController {
 
   @Public()
   @Post('/login')
-  async login(@Body() dto: AuthDto) {
-    return this.authService.login(dto);
+  async login(
+    @Body() dto: AuthDto,
+    @Req() request,
+    @Res({ passthrough: true }) response,
+  ) {
+    console.log(request.cookies);
+    response.setCookie('Yeah', 'hell');
+    const tokens = this.authService.login(dto);
+    return tokens;
   }
 
   @Public()
+  @Post('/refresh')
   @UseGuards(RtGuard)
-  @Post('refresh')
-  refreshTokens(@Request() req: any) {
-    return this.authService.getAccessToken(req.user.sub);
+  refreshTokens(@Request() req) {
+    return this.authService.refreshAccessToken(
+      req.user.sub,
+      req.user.refreshToken,
+    );
   }
 
   @Get('profile')
-  getProfile(@Request() req: any) {
+  getProfile(@Request() req) {
     return req.user;
   }
 }
