@@ -1,9 +1,10 @@
 import { jwtConstants } from './../constant';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { TokenService } from '../token.service';
 
 function decodeRefreshToken(token) {
   return Buffer.from(token, 'base64').toString('ascii');
@@ -11,19 +12,13 @@ function decodeRefreshToken(token) {
 
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    tokenService: TokenService,
+  ) {
     super({
       jwtFromRequest: (req) => {
-        const refreshToken = req?.headers?.authorization
-          .replace('Bearer', '')
-          .trim();
-
-        const decodedRefreshToken = decodeRefreshToken(refreshToken);
-
-        if (decodedRefreshToken) {
-          return decodedRefreshToken;
-        }
-        return undefined;
+        return tokenService.extractJwt(req);
       },
       secretOrKey: jwtConstants.rt_secret,
       passReqToCallback: true,

@@ -7,17 +7,17 @@ import { UsersService } from './../users/users.service';
 import * as bcrypt from 'bcrypt';
 import isEmail from 'validator/lib/isEmail';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constant';
+
 import { LoginTokens } from './types/token.type';
 import { UserLoginParams, UserSelect } from './types/user.type';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private configService: ConfigService,
-    private jwtService: JwtService,
+    private tokenService: TokenService,
   ) {}
 
   async createUser(userInfo: any) {
@@ -72,7 +72,10 @@ export class AuthService {
 
     await this.usersService.addNewRefreshToken(user.id, refreshToken);
 
-    return { refreshToken: this.encodeToken(refreshToken), accessToken };
+    return {
+      refreshToken: this.tokenService.encodeToken(refreshToken),
+      accessToken,
+    };
   }
 
   async refreshAccessToken(userId: number, refreshToken: string) {
@@ -84,45 +87,18 @@ export class AuthService {
       throw new BadRequestException();
     }
 
-    return await this.getAccessToken(userId);
+    return await this.tokenService.getAccessToken(userId);
   }
 
   async getToken(userId: number): Promise<LoginTokens> {
     const [at, rt] = await Promise.all([
-      this.getAccessToken(userId),
-      this.getRefreshToken(userId),
+      this.tokenService.getAccessToken(userId),
+      this.tokenService.getRefreshToken(userId),
     ]);
 
     return {
       accessToken: at,
       refreshToken: rt,
     };
-  }
-
-  getAccessToken(userId: number): Promise<string> {
-    const jwtPayload = {
-      sub: userId,
-    };
-
-    return this.jwtService.signAsync(jwtPayload, {
-      secret: jwtConstants.at_secret,
-      expiresIn: '30s',
-    });
-  }
-
-  getRefreshToken(userId: number): Promise<string> {
-    const jwtPayload = {
-      sub: userId,
-    };
-
-    return this.jwtService.signAsync(jwtPayload, {
-      secret: jwtConstants.rt_secret,
-      expiresIn: '7d',
-    });
-  }
-
-  encodeToken(token: string) {
-    const buf = Buffer.from(token).toString('base64');
-    return buf;
   }
 }
