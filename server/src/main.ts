@@ -48,6 +48,10 @@ async function bootstrap() {
   await app.register(fastifyCookie, {
     secret: 'my-secret', // for cookies signature
   });
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:4200'],
+    credentials: true,
+  });
 
   await app.listen(3600, '0.0.0.0');
 }

@@ -4,17 +4,17 @@ services:
     image: node:16
     container_name: backend
     restart: always
-    command: sh -c "yarn && yarn docker:debug"
+    command: sh -c "yarn && yarn docker:dev"
     ports:
       - 3600:3600
       - 5555:5555
       - 9229:9229
-    working_dir: /app
+    working_dir: /server
     links:
       - postgres
     volumes:
-      - ./server/:/app
-      - ignore:/app/node_modules
+      - ./server/:/server
+      - ignorebackend:/server/node_modules
 
   frontend:
       image: node:16
@@ -23,12 +23,12 @@ services:
       command: sh -c "yarn && yarn dev"
       ports:
       - 3000:3000
-      working_dir: /app
+      working_dir: /client
       links:
       - postgres
       volumes:
-      - ./client/:/app
-      - ignore:/app/node_modules
+      - ./client/:/client
+      - ignorefrontend:/client/node_modules
 
 
   postgres:
@@ -46,4 +46,5 @@ services:
 
 volumes:
   postgres:
-  ignore:
+  ignorefrontend:
+  ignorebackend:
