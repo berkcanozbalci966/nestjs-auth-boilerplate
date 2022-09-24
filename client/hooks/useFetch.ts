@@ -1,6 +1,5 @@
 import HttpClient from "../utils/http-client"
 import UseSWR from 'swr'
-import { AxiosResponse } from 'axios';
 
 const httpClient = new HttpClient()
 

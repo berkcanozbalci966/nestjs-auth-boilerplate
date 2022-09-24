@@ -5,7 +5,7 @@
       "type": "node",
       "request": "attach",
       "name": "Debug nestjs!",
-      "remoteRoot": "/app",
+      "remoteRoot": "/server",
       "localRoot": "${workspaceFolder}",
       "port": 9229,
       "restart": true,

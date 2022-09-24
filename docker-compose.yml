@@ -4,7 +4,7 @@ services:
     image: node:16
     container_name: backend
     restart: always
-    command: sh -c "yarn && yarn docker:dev"
+    command: sh -c "yarn && yarn docker:debug"
     ports:
       - 3600:3600
       - 5555:5555

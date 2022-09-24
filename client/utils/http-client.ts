@@ -39,11 +39,11 @@ export default class HttpClient {
   validResponseInterceptor(response: any) {
     const { Header, Body } = response.data;
 
-    return Body.data;
+    return Body;
   }
   errorResponseInterceptor(response: any) {
-    console.log(response);
+    console.log(response.response.data.Body.message);
 
-    return Promise.reject(response);
+    return Promise.reject(response.data.Header);
   }
 }
