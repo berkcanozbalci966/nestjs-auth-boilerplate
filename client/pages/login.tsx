@@ -6,16 +6,20 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import HttpClient from "../utils/http-client";
 
+import { useRouter } from "next/router";
+import { Login as LoginType } from "../types/auth.type";
+
 const httpClient = new HttpClient();
 const schema = yup
   .object({
-    firstName: yup.string().required(),
+    usernameOrEmail: yup.string().required(),
     password: yup.string().required(),
   })
   .required();
 
 function Login() {
-  // const { data, error } = useFetch("/auth/profile", "get");
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -24,21 +28,28 @@ function Login() {
     resolver: yupResolver(schema),
   });
 
-  function sendLoginRequest(data: any) {
+  async function sendLoginRequest(data: LoginType) {
     const requestObject = {
-      usernameOrEmail: data.firstName,
+      usernameOrEmail: data.usernameOrEmail,
       password: data.password,
     };
-    httpClient.post("/auth/login", requestObject);
+    return await httpClient.post("/auth/login", requestObject);
+  }
+
+  async function onSubmit(event: LoginType) {
+    try {
+      const response = await sendLoginRequest(event);
+      console.log(response);
+    } catch (error) {}
   }
 
   return (
     <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center mt-5 mb-5">
       <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
         <h1 className="mb-8 text-3xl text-center"> Login Page </h1>
-        <form onSubmit={handleSubmit(sendLoginRequest)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input
-            {...register("firstName")}
+            {...register("usernameOrEmail")}
             type="text"
             className="block border border-grey-light w-full p-3 rounded"
             placeholder="Username or email"

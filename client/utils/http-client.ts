@@ -4,6 +4,10 @@ export default class HttpClient {
   private config: AxiosRequestConfig = {
     baseURL: "http://localhost:3600/",
     withCredentials: true,
+    headers: {
+       "Content-type": "application/json",
+    }
+    
   };
   private _axios: AxiosInstance = axios.create(this.config);
 
@@ -44,6 +48,6 @@ export default class HttpClient {
   errorResponseInterceptor(response: any) {
     console.log(response.response.data.Body.message);
 
-    return Promise.reject(response.data.Header);
+    return Promise.reject(response);
   }
 }

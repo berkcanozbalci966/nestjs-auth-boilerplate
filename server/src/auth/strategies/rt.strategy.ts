@@ -18,7 +18,11 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   ) {
     super({
       jwtFromRequest: (req) => {
-        return tokenService.extractJwt(req);
+        const requestIsIncludeCookie = req.cookies['__SYSTEM__'] || undefined;
+
+        return requestIsIncludeCookie
+          ? tokenService.extractJwtFromCookie(req)
+          : tokenService.extractJwt(req);
       },
       secretOrKey: jwtConstants.rt_secret,
       passReqToCallback: true,
@@ -26,6 +30,15 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   }
 
   validate(req: Request, payload: any) {
+    const requestAuthCookie = req.cookies['__SYSTEM__'] || null;
+
+    if (requestAuthCookie) {
+      return {
+        ...payload,
+        refreshToken: decodeRefreshToken(requestAuthCookie),
+      };
+    }
+
     const refreshToken = req?.headers?.authorization
       .replace('Bearer', '')
       .trim();

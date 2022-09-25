@@ -39,7 +39,11 @@ export class AuthController {
 
     const tokens = await this.authService.login(dto);
 
-    response.setCookie('__SYSTEM__', tokens.refreshToken);
+    response.setCookie('__SYSTEM__', tokens.refreshToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
 
     return tokens;
   }
@@ -48,6 +52,8 @@ export class AuthController {
   @Post('/refresh')
   @UseGuards(RtGuard)
   refreshTokens(@Request() req) {
+    const refreshTokenCookie = req.cookies['__SYSTEM__'] || null;
+
     return this.authService.refreshAccessToken(
       req.user.sub,
       req.user.refreshToken,

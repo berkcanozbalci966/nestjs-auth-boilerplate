@@ -48,4 +48,16 @@ export class TokenService {
     }
     return undefined;
   }
+
+  extractJwtFromCookie(req: any) {
+    const refreshToken = req.cookies['__SYSTEM__'] || undefined;
+
+    const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
+
+    if (decodedRefreshToken) {
+      return decodedRefreshToken;
+    }
+
+    return undefined;
+  }
 }
