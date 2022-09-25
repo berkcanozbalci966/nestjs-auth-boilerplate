@@ -3,14 +3,13 @@ import { useRouter } from "next/router";
 import Layout from "../layouts/layout";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import useFetch from "../hooks/useFetch";
 
 import * as yup from "yup";
 
 import { Login as LoginType } from "../types/auth.type";
 import AuthService from "../services/auth.service";
 import AuthContext from "../context/AuthProvider";
-import { useEffect } from "react";
+import WithSecureLayout from "../layouts/withSecureLayout";
 
 const authService = new AuthService();
 
@@ -23,6 +22,7 @@ const schema = yup
 
 function Login() {
   const { setAuth, auth } = useContext(AuthContext);
+  const router = useRouter();
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
@@ -30,11 +30,17 @@ function Login() {
   async function onSubmit(event: LoginType) {
     try {
       const response = await authService.loginRequest(event);
-      setAuth((prev: any) => {
-        return { ...prev, ...response };
-      });
+
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+
       console.log(response);
-    } catch (error) {}
+    } catch (error) {
+      setAuth((prev: any) => {
+        return { ...prev, name: "Error" };
+      });
+    }
   }
 
   return (
@@ -64,13 +70,9 @@ function Login() {
         </form>
       </div>
 
-      <pre>{JSON.stringify(auth, null, 3)}</pre>
+      <pre>{JSON.stringify(auth, null, 2)}</pre>
     </div>
   );
 }
 
-Login.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
-
-export default Login;
+export default WithSecureLayout(Login);

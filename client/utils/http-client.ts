@@ -11,18 +11,9 @@ export default class HttpClient {
   private _axios: AxiosInstance = axios.create(this.config);
 
   constructor() {
-    //@ts-ignore
     this._axios.interceptors.response.use(
       this.validResponseInterceptor.bind(this),
       this.errorResponseInterceptor.bind(this)
-    );
-
-    this._axios.interceptors.request.use(
-      this.beforeRequestInterceptor.bind(this),
-      (err) => {
-        console.log(err, "TEST1234");
-        return Promise.reject(err);
-      }
     );
   }
 
@@ -55,7 +46,7 @@ export default class HttpClient {
   async errorResponseInterceptor(axiosError: any) {
     const prevRequest = axiosError?.config;
 
-    if (axiosError.response.status === 401 && !prevRequest?.sent) {
+    if (axiosError?.response?.status === 401 && !prevRequest?.sent) {
       prevRequest.sent = true;
       const refreshToken = await this.refreshTokenRequest();
       prevRequest.headers["Authorization"] = `Bearer ${refreshToken}`;
@@ -64,10 +55,6 @@ export default class HttpClient {
     }
 
     return Promise.reject(axiosError);
-  }
-
-  beforeRequestInterceptor(config: any) {
-    return config;
   }
 
   async refreshTokenRequest() {

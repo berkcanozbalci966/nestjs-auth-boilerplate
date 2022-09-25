@@ -9,7 +9,9 @@ export default function Home() {
   useEffect(() => {
     async function getProfile() {
       const response = await httpClient.get("/auth/profile");
-      setAuth(response);
+      setAuth((prev: any) => {
+        return { ...prev, ...response };
+      });
     }
 
     getProfile();

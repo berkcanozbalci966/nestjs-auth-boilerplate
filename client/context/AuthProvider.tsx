@@ -1,16 +1,20 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export type AuthContextType = {
   setAuth: (authInfo: any) => void;
   auth: {
     name: string;
     accessToken: string;
+    isAuth: boolean;
+    userId: number;
   };
 };
 
 const initialAuthValue = {
-  name: "test",
+  name: "",
   accessToken: "",
+  isAuth: false,
+  userId: 0,
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,6 +27,11 @@ type AuthProvider = {
 
 export const AuthProvider: React.FC<AuthProvider> = ({ children }) => {
   const [auth, setAuth] = useState(initialAuthValue);
+  useEffect(() => {
+    if (auth.userId) {
+      setAuth({ ...auth, isAuth: true });
+    }
+  }, [auth.userId]);
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
