@@ -1,15 +1,19 @@
-import { ReactElement } from "react";
+import { ReactElement, useContext } from "react";
+import { useRouter } from "next/router";
 import Layout from "../layouts/layout";
-import useFetch from "../hooks/useFetch";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import useFetch from "../hooks/useFetch";
+
 import * as yup from "yup";
-import HttpClient from "../utils/http-client";
 
-import { useRouter } from "next/router";
 import { Login as LoginType } from "../types/auth.type";
+import AuthService from "../services/auth.service";
+import AuthContext from "../context/AuthProvider";
+import { useEffect } from "react";
 
-const httpClient = new HttpClient();
+const authService = new AuthService();
+
 const schema = yup
   .object({
     usernameOrEmail: yup.string().required(),
@@ -18,27 +22,17 @@ const schema = yup
   .required();
 
 function Login() {
-  const router = useRouter();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { setAuth, auth } = useContext(AuthContext);
+  const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
 
-  async function sendLoginRequest(data: LoginType) {
-    const requestObject = {
-      usernameOrEmail: data.usernameOrEmail,
-      password: data.password,
-    };
-    return await httpClient.post("/auth/login", requestObject);
-  }
-
   async function onSubmit(event: LoginType) {
     try {
-      const response = await sendLoginRequest(event);
+      const response = await authService.loginRequest(event);
+      setAuth((prev: any) => {
+        return { ...prev, ...response };
+      });
       console.log(response);
     } catch (error) {}
   }
@@ -69,6 +63,8 @@ function Login() {
           </button>
         </form>
       </div>
+
+      <pre>{JSON.stringify(auth, null, 3)}</pre>
     </div>
   );
 }

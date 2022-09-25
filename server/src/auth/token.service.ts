@@ -12,7 +12,7 @@ export class TokenService {
 
     return this.jwtService.signAsync(jwtPayload, {
       secret: jwtConstants.at_secret,
-      expiresIn: '30s',
+      expiresIn: '3m',
     });
   }
 

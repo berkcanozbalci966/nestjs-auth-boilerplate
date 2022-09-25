@@ -4,8 +4,8 @@ import HttpClient from "../utils/http-client";
 const httpClient = new HttpClient();
 
 class AuthService {
-  loginRequest(formData: Login) {
-    return httpClient.post("/auth/login", formData);
+  async loginRequest(formData: Login) {
+    return await httpClient.post("/auth/login", formData);
   }
 }
 

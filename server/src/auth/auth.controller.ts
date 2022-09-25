@@ -52,8 +52,6 @@ export class AuthController {
   @Post('/refresh')
   @UseGuards(RtGuard)
   refreshTokens(@Request() req) {
-    const refreshTokenCookie = req.cookies['__SYSTEM__'] || null;
-
     return this.authService.refreshAccessToken(
       req.user.sub,
       req.user.refreshToken,

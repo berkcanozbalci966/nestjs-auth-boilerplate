@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <div className="navbar-center hidden lg:flex flex-1">
+        <div className="navbar-center lg:flex flex-1">
           <ul className="menu menu-horizontal p-0">
             <li>
               <Link href="/login">

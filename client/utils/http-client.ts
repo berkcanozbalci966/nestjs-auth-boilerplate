@@ -5,9 +5,8 @@ export default class HttpClient {
     baseURL: "http://localhost:3600/",
     withCredentials: true,
     headers: {
-       "Content-type": "application/json",
-    }
-    
+      "Content-type": "application/json",
+    },
   };
   private _axios: AxiosInstance = axios.create(this.config);
 
@@ -16,6 +15,14 @@ export default class HttpClient {
     this._axios.interceptors.response.use(
       this.validResponseInterceptor.bind(this),
       this.errorResponseInterceptor.bind(this)
+    );
+
+    this._axios.interceptors.request.use(
+      this.beforeRequestInterceptor.bind(this),
+      (err) => {
+        console.log(err, "TEST1234");
+        return Promise.reject(err);
+      }
     );
   }
 
@@ -45,9 +52,25 @@ export default class HttpClient {
 
     return Body;
   }
-  errorResponseInterceptor(response: any) {
-    console.log(response.response.data.Body.message);
+  async errorResponseInterceptor(axiosError: any) {
+    const prevRequest = axiosError?.config;
 
-    return Promise.reject(response);
+    if (axiosError.response.status === 401 && !prevRequest?.sent) {
+      prevRequest.sent = true;
+      const refreshToken = await this.refreshTokenRequest();
+      prevRequest.headers["Authorization"] = `Bearer ${refreshToken}`;
+
+      return this._axios(prevRequest);
+    }
+
+    return Promise.reject(axiosError);
+  }
+
+  beforeRequestInterceptor(config: any) {
+    return config;
+  }
+
+  async refreshTokenRequest() {
+    return await this._axios.post("/auth/refresh");
   }
 }
