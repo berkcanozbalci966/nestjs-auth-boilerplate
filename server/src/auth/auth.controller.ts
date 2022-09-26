@@ -16,6 +16,7 @@ import {
 import { Public } from '../common/decorators/public.decorator';
 import { RtGuard } from '../common/guards';
 import { AuthDto } from './dto/auth.dto';
+import { response } from 'express';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -58,8 +59,16 @@ export class AuthController {
     );
   }
 
-  @Get('profile')
+  @Get('/profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get('/logout')
+  async logOut(@Request() req, @Res() res) {
+    console.log(req.user.userId);
+    await this.authService.logOut(req.user.userId);
+    res.clearCookie('__SYSTEM__');
+    return 'yes';
   }
 }

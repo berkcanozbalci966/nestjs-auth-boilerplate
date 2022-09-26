@@ -78,6 +78,14 @@ export class AuthService {
     };
   }
 
+  async logOut(userId: number) {
+    if (userId) {
+      await this.usersService.removeAllRefreshTokenWithUserId(userId);
+      return;
+    }
+    throw new BadRequestException();
+  }
+
   async refreshAccessToken(userId: number, refreshToken: string) {
     const refreshTokenIsFounded = await this.usersService.findRefreshToken(
       refreshToken,

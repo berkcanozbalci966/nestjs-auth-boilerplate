@@ -1,31 +1,23 @@
 import { createContext, useState, useEffect } from "react";
+import {
+  AuthContextType,
+  AuthProvider as AuthProviderType,
+} from "../types/auth.type";
+import HttpClient from "../utils/http-client";
 
-export type AuthContextType = {
-  setAuth: (authInfo: any) => void;
-  auth: {
-    name: string;
-    accessToken: string;
-    isAuth: boolean;
-    userId: number;
-  };
-};
+const httpClient = new HttpClient();
 
 const initialAuthValue = {
   name: "",
-  accessToken: "",
   isAuth: false,
   userId: 0,
 };
 
 const AuthContext = createContext<AuthContextType>({
-  auth: { name: "Yeah" },
+  auth: initialAuthValue,
 } as AuthContextType);
 
-type AuthProvider = {
-  children: any;
-};
-
-export const AuthProvider: React.FC<AuthProvider> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   const [auth, setAuth] = useState(initialAuthValue);
   useEffect(() => {
     if (auth.userId) {
@@ -33,8 +25,13 @@ export const AuthProvider: React.FC<AuthProvider> = ({ children }) => {
     }
   }, [auth.userId]);
 
+  function logOut() {
+    httpClient.get("/auth/logout");
+    setAuth(initialAuthValue);
+  }
+
   return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
+    <AuthContext.Provider value={{ auth, setAuth, logOut }}>
       {children}
     </AuthContext.Provider>
   );
