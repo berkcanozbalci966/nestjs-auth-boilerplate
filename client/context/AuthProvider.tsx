@@ -4,6 +4,7 @@ import {
   AuthProvider as AuthProviderType,
 } from "../types/auth.type";
 import HttpClient from "../utils/http-client";
+import { useRouter } from "next/router";
 
 const httpClient = new HttpClient();
 
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   const [auth, setAuth] = useState(initialAuthValue);
+  const router = useRouter();
   useEffect(() => {
     if (auth.userId) {
       setAuth({ ...auth, isAuth: true });
@@ -28,6 +30,9 @@ export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   function logOut() {
     httpClient.get("/auth/logout");
     setAuth(initialAuthValue);
+    setTimeout(() => {
+      router.push("/");
+    }, 500);
   }
 
   return (

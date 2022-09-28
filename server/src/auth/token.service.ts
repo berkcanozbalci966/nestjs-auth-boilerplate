@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { jwtConstants } from './constant';
 import { JwtService } from '@nestjs/jwt';
+
+import { FastifyRequestTypeWithCookie } from './../types/fastify-request-with-cookie.type';
+import { JwtFrom } from '../types/jwt.type';
 
 @Injectable()
 export class TokenService {
@@ -36,28 +39,61 @@ export class TokenService {
     return Buffer.from(token, 'base64').toString('ascii');
   }
 
-  extractJwt(req: any) {
-    const refreshToken = req?.headers?.authorization
-      .replace('Bearer', '')
-      .trim();
+  extractJwtFromAuthHeader(req: any) {
+    try {
+      const refreshToken = req?.headers?.authorization
+        .replace('Bearer', '')
+        .trim();
 
-    const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
+      const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
 
-    if (decodedRefreshToken) {
-      return decodedRefreshToken;
+      if (decodedRefreshToken) {
+        return decodedRefreshToken;
+      }
+    } catch (error) {
+      throw new BadRequestException();
     }
-    return undefined;
   }
 
   extractJwtFromCookie(req: any) {
-    const refreshToken = req.cookies['__SYSTEM__'] || undefined;
+    try {
+      const refreshToken = req.cookies['__SYSTEM__'] || undefined;
 
-    const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
+      const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
 
-    if (decodedRefreshToken) {
-      return decodedRefreshToken;
+      if (decodedRefreshToken) {
+        return decodedRefreshToken;
+      }
+      return null;
+    } catch (error) {
+      throw new BadRequestException();
+    }
+  }
+
+  detectJwtFrom(req: FastifyRequestTypeWithCookie): JwtFrom {
+    if (req?.cookies['__SYSTEM__']) {
+      return 'cookie';
     }
 
-    return undefined;
+    if (req?.headers && req?.headers['authorization']) {
+      return 'header';
+    }
+  }
+
+  getJwt(jwtFrom: JwtFrom, req: FastifyRequestTypeWithCookie) {
+    if (jwtFrom == 'cookie') {
+      return this.extractJwtFromCookie(req);
+    }
+
+    if (jwtFrom == 'header') {
+      return this.extractJwtFromAuthHeader(req);
+    }
+    return null;
+  }
+
+  detectJwtFromAndGetJWT(req: FastifyRequestTypeWithCookie) {
+    const jwtFRom: JwtFrom = this.detectJwtFrom(req);
+    const jwt = this.getJwt(jwtFRom, req);
+    return jwt;
   }
 }

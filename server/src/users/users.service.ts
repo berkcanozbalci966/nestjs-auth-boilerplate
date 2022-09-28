@@ -1,12 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
+import isEmail from 'validator/lib/isEmail';
 
 const userSelect = {
   select: {
     username: true,
     id: true,
     password: true,
+    passwordForgetKey: true,
   },
 };
 
@@ -20,6 +26,17 @@ export class UsersService {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     });
+  }
+
+  async findUser(usernameOrEmail: string) {
+    try {
+      if (isEmail(usernameOrEmail)) {
+        return await this.getUserWithEmail(usernameOrEmail);
+      }
+      return await this.getUserWithUsername(usernameOrEmail);
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 
   async getUserWithUsername(username: string) {
@@ -105,6 +122,33 @@ export class UsersService {
 
   async getUserTokenCount(userId: number) {
     return await this.prisma.token.count({
+      where: {
+        userId,
+      },
+    });
+  }
+
+  async createUserForgetKey(userId: number) {
+    const forgetKey = Math.floor(Math.random() * (9999 - 1000) + 1000);
+
+    return await this.prisma.passwordForgetKey.create({
+      data: {
+        userId: userId,
+        key: String(forgetKey),
+      },
+    });
+  }
+
+  async removeUserForgetKey(userId: number) {
+    return await this.prisma.passwordForgetKey.delete({
+      where: {
+        userId: userId,
+      },
+    });
+  }
+
+  async userForgetKeyCount(userId: number) {
+    return await this.prisma.passwordForgetKey.count({
       where: {
         userId,
       },

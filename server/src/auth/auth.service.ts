@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './../users/users.service';
 import * as bcrypt from 'bcrypt';
-import isEmail from 'validator/lib/isEmail';
+
 import { ConfigService } from '@nestjs/config';
 
 import { LoginTokens } from './types/token.type';
-import { UserLoginParams, UserSelect } from './types/user.type';
+import { UserLoginParams } from './types/user.type';
 import { TokenService } from './token.service';
 
 @Injectable()
@@ -21,28 +21,16 @@ export class AuthService {
   ) {}
 
   async createUser(userInfo: any) {
-    const hashedPassword = await bcrypt.hash(
-      userInfo.password,
-      parseInt(this.configService.get('BCRYPT_SALT_ROUND')),
-    );
-
+    const hashedPassword = await this.hashPassword(userInfo.password);
     const userPayload = Object.assign(userInfo, { password: hashedPassword });
 
     return await this.usersService.createUser(userPayload);
   }
 
   async validateUser(userLoginParams: UserLoginParams): Promise<any> {
-    let user: UserSelect;
-
-    if (isEmail(userLoginParams.usernameOrEmail)) {
-      user = await this.usersService.getUserWithEmail(
-        userLoginParams.usernameOrEmail,
-      );
-    } else {
-      user = await this.usersService.getUserWithUsername(
-        userLoginParams.usernameOrEmail,
-      );
-    }
+    const user = await this.usersService.findUser(
+      userLoginParams.usernameOrEmail,
+    );
 
     if (!user) {
       throw new UnauthorizedException();
@@ -78,12 +66,36 @@ export class AuthService {
     };
   }
 
+  async changePassword(userId: number, password: string) {
+    const hashedPassword = await this.hashPassword(password);
+    await this.usersService.updateUser({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+  }
+
   async logOut(userId: number) {
     if (userId) {
       await this.usersService.removeAllRefreshTokenWithUserId(userId);
       return;
     }
     throw new BadRequestException();
+  }
+
+  async sendUserForgetKey(usernameOrEmail: string) {
+    const user = await this.usersService.findUser(usernameOrEmail);
+    const userForgetKeyCount = await this.usersService.userForgetKeyCount(
+      user.id,
+    );
+    if (userForgetKeyCount) {
+      await this.usersService.removeUserForgetKey(user.id);
+    }
+
+    return await this.usersService.createUserForgetKey(user.id);
   }
 
   async refreshAccessToken(userId: number, refreshToken: string) {
@@ -108,5 +120,26 @@ export class AuthService {
       accessToken: at,
       refreshToken: rt,
     };
+  }
+
+  async hashPassword(password: string) {
+    return await bcrypt.hash(
+      password,
+      parseInt(this.configService.get('BCRYPT_SALT_ROUND')),
+    );
+  }
+
+  async changePasswordWithKey(
+    usernameOrEmail: string,
+    key: string,
+    newPassword: string,
+  ) {
+    const user = await this.usersService.findUser(usernameOrEmail);
+    if (user.passwordForgetKey.key == key) {
+      await this.changePassword(user.id, newPassword);
+      await this.usersService.removeAllRefreshTokenWithUserId(user.id);
+      return 'password changed!';
+    }
+    return undefined;
   }
 }

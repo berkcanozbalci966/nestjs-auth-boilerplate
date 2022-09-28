@@ -13,7 +13,7 @@ import fastifyCookie from 'fastify-cookie';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter(),
   );
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));

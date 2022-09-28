@@ -7,16 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String?  @unique @db.VarChar(20)
-  email      String   @unique @db.VarChar(30)
-  password   String   @db.VarChar(60)
-  name       String?  @db.VarChar(30)
-  surname    String?  @db.VarChar(30)
-  created_at DateTime @default(now())
-  role       Role     @default(USER)
-  tokens     Token[]
+  id                Int                @id @default(autoincrement())
+  username          String?            @unique @db.VarChar(20)
+  email             String             @unique @db.VarChar(30)
+  password          String             @db.VarChar(60)
+  name              String?            @db.VarChar(30)
+  surname           String?            @db.VarChar(30)
+  passwordForgetKey PasswordForgetKey?
+  created_at        DateTime           @default(now())
+  role              Role               @default(USER)
+  tokens            Token[]
 }
 
 model Token {
@@ -26,7 +32,9 @@ model Token {
   user   User   @relation(fields: [userId], references: [id])
 }
 
-enum Role {
-  USER
-  ADMIN
+model PasswordForgetKey {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  key    String @unique
+  user   User   @relation(fields: [userId], references: [id])
 }
