@@ -52,13 +52,13 @@ export class AuthService {
 
     const { refreshToken, accessToken } = await this.getToken(user.id);
 
-    const userTokenCount = await this.usersService.getUserTokenCount(user.id);
+    const userTokenCount = await this.tokenService.getUserTokenCount(user.id);
 
     if (userTokenCount > 1) {
-      await this.usersService.removeAllRefreshTokenWithUserId(user.id);
+      await this.tokenService.removeAllRefreshTokenWithUserId(user.id);
     }
 
-    await this.usersService.addNewRefreshToken(user.id, refreshToken);
+    await this.tokenService.addNewRefreshToken(user.id, refreshToken);
 
     return {
       refreshToken: this.tokenService.encodeToken(refreshToken),
@@ -80,7 +80,7 @@ export class AuthService {
 
   async logOut(userId: number) {
     if (userId) {
-      await this.usersService.removeAllRefreshTokenWithUserId(userId);
+      await this.tokenService.removeAllRefreshTokenWithUserId(userId);
       return;
     }
     throw new BadRequestException();
@@ -99,7 +99,7 @@ export class AuthService {
   }
 
   async refreshAccessToken(userId: number, refreshToken: string) {
-    const refreshTokenIsFounded = await this.usersService.findRefreshToken(
+    const refreshTokenIsFounded = await this.tokenService.findRefreshToken(
       refreshToken,
     );
 
@@ -144,7 +144,7 @@ export class AuthService {
     const user = await this.usersService.findUser(usernameOrEmail);
     if (user.passwordForgetKey.key == key) {
       await this.changePassword(user.id, newPassword);
-      await this.usersService.removeAllRefreshTokenWithUserId(user.id);
+      await this.tokenService.removeAllRefreshTokenWithUserId(user.id);
       return 'password changed!';
     }
     return undefined;

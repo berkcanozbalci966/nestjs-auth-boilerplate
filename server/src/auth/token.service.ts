@@ -5,10 +5,11 @@ import { JwtService } from '@nestjs/jwt';
 import { FastifyRequestTypeWithCookie } from './../types/fastify-request-with-cookie.type';
 import { JwtFrom } from '../types/jwt.type';
 import { Cookie } from '../common/enums/auth.enums';
+import { PrismaService } from './../prisma/prisma.service';
 
 @Injectable()
 export class TokenService {
-  constructor(private jwtService: JwtService) {}
+  constructor(private jwtService: JwtService, private prisma: PrismaService) {}
   getAccessToken(userId: number): Promise<string> {
     const jwtPayload = {
       sub: userId,
@@ -96,5 +97,38 @@ export class TokenService {
     const jwtFRom: JwtFrom = this.detectJwtFrom(req);
     const jwt = this.getJwt(jwtFRom, req);
     return jwt;
+  }
+
+  async addNewRefreshToken(id: number, refreshToken: string) {
+    return await this.prisma.token.create({
+      data: {
+        userId: id,
+        token: refreshToken,
+      },
+    });
+  }
+
+  async removeAllRefreshTokenWithUserId(userId: number) {
+    return await this.prisma.token.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
+  async findRefreshToken(refreshToken: string) {
+    return await this.prisma.token.findUnique({
+      where: {
+        token: refreshToken,
+      },
+    });
+  }
+
+  async getUserTokenCount(userId: number) {
+    return await this.prisma.token.count({
+      where: {
+        userId,
+      },
+    });
   }
 }

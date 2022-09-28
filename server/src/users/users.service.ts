@@ -95,39 +95,6 @@ export class UsersService {
     return this.prisma.user.delete({ where });
   }
 
-  async addNewRefreshToken(id: number, refreshToken: string) {
-    return await this.prisma.token.create({
-      data: {
-        userId: id,
-        token: refreshToken,
-      },
-    });
-  }
-
-  async removeAllRefreshTokenWithUserId(userId: number) {
-    return await this.prisma.token.deleteMany({
-      where: {
-        userId,
-      },
-    });
-  }
-
-  async findRefreshToken(refreshToken: string) {
-    return await this.prisma.token.findUnique({
-      where: {
-        token: refreshToken,
-      },
-    });
-  }
-
-  async getUserTokenCount(userId: number) {
-    return await this.prisma.token.count({
-      where: {
-        userId,
-      },
-    });
-  }
-
   async createUserForgetKey(userId: number) {
     const forgetKey = Math.floor(Math.random() * (9999 - 1000) + 1000);
 
