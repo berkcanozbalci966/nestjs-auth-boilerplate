@@ -117,11 +117,14 @@ export class TokenService {
   }
 
   async findRefreshToken(refreshToken: string) {
-    return await this.prisma.token.findUnique({
-      where: {
-        token: refreshToken,
-      },
-    });
+    if (refreshToken) {
+      return await this.prisma.token.findUnique({
+        where: {
+          token: refreshToken,
+        },
+      });
+    }
+    return;
   }
 
   async getUserTokenCount(userId: number) {

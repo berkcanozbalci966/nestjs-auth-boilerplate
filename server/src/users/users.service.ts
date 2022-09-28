@@ -13,6 +13,7 @@ const userSelect = {
     id: true,
     password: true,
     passwordForgetKey: true,
+    tokens: true,
   },
 };
 

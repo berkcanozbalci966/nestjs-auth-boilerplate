@@ -15,8 +15,9 @@ export class RtGuard extends AuthGuard('jwt-refresh') {
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const jwt = this.tokenService.detectJwtFromAndGetJWT(request);
+    const isTokenFounded = this.tokenService.findRefreshToken(jwt);
 
-    if (!jwt) {
+    if (!jwt && !isTokenFounded) {
       throw new BadRequestException();
     }
 

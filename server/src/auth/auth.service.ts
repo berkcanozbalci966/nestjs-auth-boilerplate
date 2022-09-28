@@ -52,9 +52,9 @@ export class AuthService {
 
     const { refreshToken, accessToken } = await this.getToken(user.id);
 
-    const userTokenCount = await this.tokenService.getUserTokenCount(user.id);
+    const userTokenCount = user.tokens.length;
 
-    if (userTokenCount > 1) {
+    if (userTokenCount >= 1) {
       await this.tokenService.removeAllRefreshTokenWithUserId(user.id);
     }
 
@@ -107,7 +107,9 @@ export class AuthService {
       throw new BadRequestException();
     }
 
-    return await this.tokenService.getAccessToken(userId);
+    const accessToken = await this.tokenService.getAccessToken(userId);
+
+    return { accessToken };
   }
 
   async getToken(userId: number): Promise<LoginTokens> {
