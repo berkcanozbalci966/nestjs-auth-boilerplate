@@ -12,6 +12,7 @@ const initialAuthValue = {
   name: "",
   isAuth: false,
   userId: 0,
+  accessToken: "",
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,9 +22,12 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   const [auth, setAuth] = useState(initialAuthValue);
   const router = useRouter();
+
   useEffect(() => {
     if (auth.userId) {
-      setAuth({ ...auth, isAuth: true });
+      setAuth((prev) => {
+        return { ...prev, isAuth: true };
+      });
     }
   }, [auth.userId]);
 

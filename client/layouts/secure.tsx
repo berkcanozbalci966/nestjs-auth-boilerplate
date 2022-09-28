@@ -12,13 +12,13 @@ const SecureLayout = ({ children }: Layout) => {
 
   const isDisableRoute = disableSecureRoutes.includes(router.pathname);
 
-  useEffect(() => {
-    if (auth.isAuth && isDisableRoute) {
-      setTimeout(() => {
-        router.push("/");
-      }, 500);
-    }
-  }, [router.isReady]);
+  // useEffect(() => {
+  //   if (auth.isAuth && isDisableRoute) {
+  //     setTimeout(() => {
+  //       router.back();
+  //     }, 500);
+  //   }
+  // }, [router.isReady]);
 
   return <>{auth.isAuth && isDisableRoute ? <ErrorPage /> : children}</>;
 };

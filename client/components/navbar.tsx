@@ -13,11 +13,16 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <div className="navbar-center lg:flex flex-1">
+        <div className="navbar-center lg:flex flex-1 z-50">
           <ul className="menu menu-horizontal p-0">
             <li>
               <Link href="/login">
                 <a>Login</a>
+              </Link>
+            </li>
+            <li>
+              <Link href={"/register"}>
+                <a>Register</a>
               </Link>
             </li>
             <li tabIndex={0}>
@@ -35,15 +40,14 @@ const Navbar: React.FC = () => {
               </a>
               <ul className="p-2">
                 <li>
-                  <a>Submenu 1</a>
+                  <Link href={"/test"}>
+                    <a>Test</a>
+                  </Link>
                 </li>
                 <li>
                   <a>Submenu 2</a>
                 </li>
               </ul>
-            </li>
-            <li>
-              <a>Item 3</a>
             </li>
           </ul>
         </div>

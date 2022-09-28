@@ -46,7 +46,11 @@ export default class HttpClient {
   async errorResponseInterceptor(axiosError: any) {
     const prevRequest = axiosError?.config;
 
-    if (axiosError?.response?.status === 401 && !prevRequest?.sent) {
+    if (
+      axiosError?.response?.status === 401 &&
+      !prevRequest?.sent &&
+      prevRequest.url == "/auth/profile"
+    ) {
       prevRequest.sent = true;
       const refreshToken = await this.refreshTokenRequest();
       prevRequest.headers["Authorization"] = `Bearer ${refreshToken}`;

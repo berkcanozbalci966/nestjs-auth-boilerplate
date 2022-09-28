@@ -30,6 +30,9 @@ function Login() {
   async function onSubmit(event: LoginType) {
     try {
       const response = await authService.loginRequest(event);
+      setAuth((prev: any) => {
+        return { ...prev, ...response };
+      });
 
       setTimeout(() => {
         router.push("/");

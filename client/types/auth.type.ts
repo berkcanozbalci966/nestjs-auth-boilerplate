@@ -14,5 +14,6 @@ export type AuthContextType = {
     name: string;
     isAuth: boolean;
     userId: number;
+    accessToken: string;
   };
 };
