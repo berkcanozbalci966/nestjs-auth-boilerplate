@@ -36,10 +36,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const isPasswordMatched = (await bcrypt.compare(
+    const isPasswordMatched = await this.comparePassword(
       userLoginParams.password,
       user.password,
-    )) as unknown as boolean;
+    );
 
     if (!isPasswordMatched) {
       throw new UnauthorizedException();
@@ -127,6 +127,13 @@ export class AuthService {
       password,
       parseInt(this.configService.get('BCRYPT_SALT_ROUND')),
     );
+  }
+
+  async comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(password, hashedPassword);
   }
 
   async changePasswordWithKey(

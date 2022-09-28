@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { FastifyRequestTypeWithCookie } from './../types/fastify-request-with-cookie.type';
 import { JwtFrom } from '../types/jwt.type';
+import { Cookie } from '../common/enums/auth.enums';
 
 @Injectable()
 export class TokenService {
@@ -57,7 +58,7 @@ export class TokenService {
 
   extractJwtFromCookie(req: any) {
     try {
-      const refreshToken = req.cookies['__SYSTEM__'] || undefined;
+      const refreshToken = req.cookies[Cookie.REFRESH_TOKEN] || undefined;
 
       const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
 
@@ -71,7 +72,7 @@ export class TokenService {
   }
 
   detectJwtFrom(req: FastifyRequestTypeWithCookie): JwtFrom {
-    if (req?.cookies['__SYSTEM__']) {
+    if (req?.cookies[Cookie.REFRESH_TOKEN]) {
       return 'cookie';
     }
 

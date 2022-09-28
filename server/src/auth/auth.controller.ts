@@ -16,8 +16,12 @@ import {
 
 import { Public } from '../common/decorators/public.decorator';
 import { RtGuard } from '../common/guards';
-import { AuthDto } from './dto/auth.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { FastifyRequestTypeWithCookie } from './../types/fastify-request-with-cookie.type';
+import { Cookie } from '../common/enums/auth.enums';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ForgetPasswordUserDto } from './dto/forget-password-user.dto';
+import { ChangePasswordUserDto } from './dto/change-password-user.dto';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -26,26 +30,39 @@ export class AuthController {
 
   @Public()
   @Post('/signup')
-  async register(@Body() body: any): Promise<UserEntity> {
+  async register(@Body() body: CreateUserDto): Promise<UserEntity> {
     return new UserEntity(await this.authService.createUser(body));
   }
 
   @Public()
   @Post('/login')
   async login(
-    @Body() dto: AuthDto,
-    @Req() request,
+    @Body() dto: LoginUserDto,
     @Res({ passthrough: true }) response: FastifyRequestTypeWithCookie,
   ) {
     const tokens = await this.authService.login(dto);
 
-    response.setCookie('__SYSTEM__', tokens.refreshToken, {
+    response.setCookie(Cookie.REFRESH_TOKEN, tokens.refreshToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
     });
 
     return tokens;
+  }
+
+  @Public()
+  @UseGuards(RtGuard)
+  @Get('/logout')
+  async logOut(@Request() req, @Res({ passthrough: true }) res) {
+    await this.authService.logOut(req.user.sub);
+    res.clearCookie(Cookie.REFRESH_TOKEN);
+    return 'yes';
+  }
+
+  @Get('/profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 
   @Public()
@@ -58,22 +75,9 @@ export class AuthController {
     );
   }
 
-  @Get('/profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-  @Public()
-  @UseGuards(RtGuard)
-  @Get('/logout')
-  async logOut(@Request() req, @Res({ passthrough: true }) res) {
-    await this.authService.logOut(req.user.sub);
-    res.clearCookie('__SYSTEM__');
-    return 'yes';
-  }
-
   @Public()
   @Post('/forgetpassword')
-  async forgetPassword(@Body() body) {
+  async forgetPassword(@Body() body: ForgetPasswordUserDto) {
     try {
       await this.authService.sendUserForgetKey(body.usernameOrEmail);
       return 'yes';
@@ -84,7 +88,7 @@ export class AuthController {
 
   @Public()
   @Post('/changepasswordwithkey')
-  async changePasswordWithKey(@Body() body) {
+  async changePasswordWithKey(@Body() body: ChangePasswordUserDto) {
     try {
       return await this.authService.changePasswordWithKey(
         body.usernameOrEmail,
