@@ -72,8 +72,6 @@ function Login() {
           </button>
         </form>
       </div>
-
-      <pre>{JSON.stringify(auth, null, 2)}</pre>
     </div>
   );
 }

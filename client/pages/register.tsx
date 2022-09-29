@@ -1,6 +1,5 @@
-import { ReactElement, useContext } from "react";
+import { useContext } from "react";
 import { useRouter } from "next/router";
-import Layout from "../layouts/layout";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -9,6 +8,7 @@ import * as yup from "yup";
 import { Login as LoginType } from "../types/auth.type";
 import AuthService from "../services/auth.service";
 import AuthContext from "../context/AuthProvider";
+import WithSecureLayout from "../layouts/withSecureLayout";
 
 const authService = new AuthService();
 
@@ -77,18 +77,12 @@ function Register() {
             type="submit"
             className="w-full text-center py-3 rounded btn btn-info text-white mt-4"
           >
-            Login
+            Register
           </button>
         </form>
       </div>
-
-      <pre>{JSON.stringify(auth, null, 2)}</pre>
     </div>
   );
 }
 
-Register.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
-
-export default Register;
+export default WithSecureLayout(Register);

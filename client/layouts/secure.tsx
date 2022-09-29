@@ -8,17 +8,15 @@ const SecureLayout = ({ children }: Layout) => {
   const { auth } = useContext(AuthContext);
   const router = useRouter();
 
-  const disableSecureRoutes = ["/login"];
+  const disableSecureRoutes = ["/login", "/register"];
 
   const isDisableRoute = disableSecureRoutes.includes(router.pathname);
 
   useEffect(() => {
     if (auth.isAuth && isDisableRoute) {
-      setTimeout(() => {
-        router.push("/");
-      }, 500);
+      router.push("/");
     }
-  }, [router.isReady]);
+  }, [router.pathname]);
 
   return <>{auth.isAuth && isDisableRoute ? <ErrorPage /> : children}</>;
 };
