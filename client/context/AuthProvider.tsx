@@ -17,10 +17,13 @@ const initialAuthValue = {
 
 const AuthContext = createContext<AuthContextType>({
   auth: initialAuthValue,
+  refresRequestResponse: true,
 } as AuthContextType);
 
 export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   const [auth, setAuth] = useState(initialAuthValue);
+  const [refresRequestResponse, setRefreshRequestResponse] = useState(true);
+  const [accessRequestResponse, setAccessRequestResponse] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -40,7 +43,17 @@ export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth, logOut }}>
+    <AuthContext.Provider
+      value={{
+        auth,
+        setAuth,
+        logOut,
+        refresRequestResponse,
+        setRefreshRequestResponse,
+        accessRequestResponse,
+        setAccessRequestResponse,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

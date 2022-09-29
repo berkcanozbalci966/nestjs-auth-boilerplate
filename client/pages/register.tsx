@@ -45,21 +45,34 @@ function Register() {
   return (
     <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center mt-5 mb-5">
       <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
-        <h1 className="mb-8 text-3xl text-center"> Login Page </h1>
+        <h1 className="mb-8 text-3xl text-center"> Register Page </h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             {...register("usernameOrEmail")}
             type="text"
             className="block border border-grey-light w-full p-3 rounded"
-            placeholder="Username or email"
+            placeholder="username"
           />
-          <p className="mt-2"></p>
+          <input
+            {...register("usernameOrEmail")}
+            type="text"
+            className="block border border-grey-light w-full p-3 rounded mt-4"
+            placeholder="email"
+          />
+
           <input
             {...register("password")}
             type="password"
             className="block border border-grey-light w-full p-3 rounded mt-4"
             placeholder="password"
-          />{" "}
+          />
+          <input
+            {...register("password")}
+            type="password"
+            className="block border border-grey-light w-full p-3 rounded mt-4"
+            placeholder="password again"
+          />
+
           <button
             type="submit"
             className="w-full text-center py-3 rounded btn btn-info text-white mt-4"

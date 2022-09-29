@@ -1,13 +1,16 @@
 import { ReactElement } from "react";
 import Layout from "../layouts/layout";
-
+import StepperContainer from "./../components/stepper/container";
+import Step from "../components/stepper/step";
 export default function TestPage() {
   return (
     <>
-      <div>
-        <h1>Error</h1>
-        <h2>We have some problem here ....</h2>
-      </div>
+      <StepperContainer>
+        <Step />
+        <Step />
+        <Step />
+        <Step />
+      </StepperContainer>
     </>
   );
 }

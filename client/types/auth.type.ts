@@ -10,6 +10,10 @@ export type AuthProvider = {
 export type AuthContextType = {
   setAuth: (authInfo: any) => void;
   logOut: () => void;
+  refresRequestResponse: boolean;
+  setRefreshRequestResponse: (type: boolean) => void;
+  accessRequestResponse: boolean;
+  setAccessRequestResponse: (type: boolean) => void;
   auth: {
     name: string;
     isAuth: boolean;

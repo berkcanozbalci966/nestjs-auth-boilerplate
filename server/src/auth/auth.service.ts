@@ -63,6 +63,7 @@ export class AuthService {
     return {
       refreshToken: this.tokenService.encodeToken(refreshToken),
       accessToken,
+      userId: user.id,
     };
   }
 
