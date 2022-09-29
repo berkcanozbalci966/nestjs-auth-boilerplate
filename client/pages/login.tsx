@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import * as yup from "yup";
 
-import { AuthContextType, Login as LoginType } from "../types/auth.type";
+import { Login as LoginType } from "../types/auth.type";
 import AuthService from "../services/auth.service";
 import AuthContext from "../context/AuthProvider";
 import WithSecureLayout from "../layouts/withSecureLayout";
@@ -21,7 +21,7 @@ const schema = yup
   .required();
 
 function Register() {
-  const { setAuth, auth } = useContext(AuthContext);
+  const { setAuth, auth, setUser } = useContext(AuthContext);
   const router = useRouter();
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
@@ -29,8 +29,10 @@ function Register() {
 
   async function onSubmit(event: LoginType) {
     try {
-      const response = await authService.loginRequest(event);
-      setAuth((prev: any) => ({ ...prev, ...response }));
+      const response: any = await authService.login(event);
+      const { user, ...authInfo } = response.user;
+      setAuth((prev: any) => ({ ...prev, ...authInfo }));
+      setUser((prev: any) => ({ ...prev, ...user }));
       router.push("/");
 
       console.log(response);
@@ -76,7 +78,7 @@ function Register() {
               </a>
             </Label>
           </div>
-          <Button type="submit">Register new account</Button>
+          <Button type="submit">Login</Button>
         </form>
       </div>
     </div>

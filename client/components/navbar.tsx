@@ -107,11 +107,7 @@ const NavbarComponent: React.FC = () => {
         </div>
       )}
 
-      <Navbar.Collapse
-        onClick={() => {
-          console.log("test");
-        }}
-      >
+      <Navbar.Collapse>
         <Link href="/">Home</Link>
         <Link href="/login">Login</Link>
         <Link href="/register">Register</Link>

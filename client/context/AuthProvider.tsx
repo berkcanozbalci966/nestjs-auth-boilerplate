@@ -11,28 +11,34 @@ const httpClient = new HttpClient();
 const initialAuthValue = {
   name: "",
   isAuth: false,
-  userId: 0,
   accessToken: "",
+};
+
+const initialUserValue = {
+  id: 0,
 };
 
 const AuthContext = createContext<AuthContextType>({
   auth: initialAuthValue,
   refresRequestResponse: true,
+  user: initialUserValue,
 } as AuthContextType);
 
 export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   const [auth, setAuth] = useState(initialAuthValue);
+  const [user, setUser] = useState(initialUserValue);
   const [refresRequestResponse, setRefreshRequestResponse] = useState(true);
   const [accessRequestResponse, setAccessRequestResponse] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (auth.userId) {
+    console.log("triggered", user.id);
+    if (user.id) {
       setAuth((prev) => {
         return { ...prev, isAuth: true };
       });
     }
-  }, [auth.userId]);
+  }, [user]);
 
   function logOut() {
     httpClient.get("/auth/logout");
@@ -52,6 +58,8 @@ export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
         setRefreshRequestResponse,
         accessRequestResponse,
         setAccessRequestResponse,
+        user,
+        setUser,
       }}
     >
       {children}

@@ -3,6 +3,10 @@ export type Login = {
   password?: string;
 };
 
+export type Register = {
+  passwordRepeat: string;
+};
+
 export type AuthProvider = {
   children: any;
 };
@@ -14,10 +18,13 @@ export type AuthContextType = {
   setRefreshRequestResponse: (type: boolean) => void;
   accessRequestResponse: boolean;
   setAccessRequestResponse: (type: boolean) => void;
+  setUser: (user: any) => void;
   auth: {
     name: string;
     isAuth: boolean;
-    userId: number;
     accessToken: string;
+  };
+  user: {
+    id: number;
   };
 };

@@ -16,6 +16,8 @@ const Layout = ({ children }: Layout) => {
     refresRequestResponse,
     accessRequestResponse,
     setAccessRequestResponse,
+    user,
+    setUser,
   } = useAuth();
   const [firstAuthLoading, setFirstAuthLoading] = useState(true);
   const newHttpClient = useHttpClient();
@@ -44,14 +46,14 @@ const Layout = ({ children }: Layout) => {
     }
 
     return () => {};
-  }, [auth.userId, auth.accessToken, firstAuthLoading]);
+  }, [user.id, auth.accessToken, firstAuthLoading]);
 
   useEffect(() => {
     async function getProfile() {
       await newHttpClient
         .get("/auth/profile")
-        .then((res) => {
-          setAuth((prev: any) => ({ ...prev, ...res }));
+        .then((res: any) => {
+          setUser((prev: any) => ({ ...prev, ...res.user }));
           setAccessRequestResponse(false);
         })
         .catch(() => {
@@ -73,7 +75,7 @@ const Layout = ({ children }: Layout) => {
       <main className="flex-grow container px-5 py-24 mx-auto mb-5">
         {children}
       </main>
-      <div style={{ marginTop: "250px" }}>{JSON.stringify(auth, null, 4)}</div>
+      <div style={{ marginTop: "250px" }}>{JSON.stringify(user, null, 4)}</div>
       <Footer />
     </div>
   );
