@@ -29,8 +29,17 @@ export class AuthController {
 
   @Public()
   @Post('/signup')
-  async register(@Body() body: CreateUserDto): Promise<UserEntity> {
-    return new UserEntity(await this.authService.createUser(body));
+  async register(
+    @Body() body: CreateUserDto,
+    @Res({ passthrough: true }) response: FastifyRequestTypeWithCookie,
+  ): Promise<UserEntity> {
+    const user = await this.authService.signup(body);
+    response.setCookie(Cookie.REFRESH_TOKEN, user.refreshToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+    return new UserEntity(user);
   }
 
   @Public()
@@ -61,7 +70,7 @@ export class AuthController {
 
   @Get('/profile')
   getProfile(@Request() req) {
-    return req.user;
+    return { user: req.user };
   }
 
   @Public()

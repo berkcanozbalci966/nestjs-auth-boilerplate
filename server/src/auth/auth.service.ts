@@ -27,6 +27,18 @@ export class AuthService {
     return await this.usersService.createUser(userPayload);
   }
 
+  async signup(userInfo: any) {
+    const user = await this.createUser(userInfo);
+    const { refreshToken, accessToken } = await this.getToken(user.id);
+    await this.tokenService.addNewRefreshToken(user.id, refreshToken);
+
+    return {
+      ...user,
+      refreshToken: this.tokenService.encodeToken(refreshToken),
+      accessToken,
+    };
+  }
+
   async validateUser(userLoginParams: UserLoginParams): Promise<any> {
     const user = await this.usersService.findUser(
       userLoginParams.usernameOrEmail,
@@ -63,7 +75,9 @@ export class AuthService {
     return {
       refreshToken: this.tokenService.encodeToken(refreshToken),
       accessToken,
-      userId: user.id,
+      user: {
+        id: user.id,
+      },
     };
   }
 
