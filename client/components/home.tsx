@@ -1,51 +1,57 @@
 import React from "react";
+import { TextInput, Label, Checkbox, Button } from "flowbite-react";
 
 const Home = () => {
   return (
-    <div className="hero h-500 bg-base-200">
-      <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="text-center lg:text-left">
-          <h1 className="text-5xl font-bold">Login now!</h1>
-          <p className="py-6">
-            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
-            a id nisi.
-          </p>
+    <form className="flex flex-col gap-4">
+      <div>
+        <div className="mb-2 block">
+          <Label htmlFor="email2" value="Your email" />
         </div>
-        <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-          <div className="card-body">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
-              <input
-                type="text"
-                placeholder="email"
-                className="input input-bordered"
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                type="text"
-                placeholder="password"
-                className="input input-bordered"
-              />
-              <label className="label">
-                <a href="#" className="label-text-alt link link-hover">
-                  Forgot password?
-                </a>
-              </label>
-            </div>
-            <div className="form-control mt-6">
-              <button className="btn btn-primary">Login</button>
-            </div>
-          </div>
-        </div>
+        <TextInput
+          id="email2"
+          type="email"
+          placeholder="name@flowbite.com"
+          required={true}
+          shadow={true}
+        />
       </div>
-    </div>
+      <div>
+        <div className="mb-2 block">
+          <Label htmlFor="password2" value="Your password" />
+        </div>
+        <TextInput
+          id="password2"
+          type="password"
+          required={true}
+          shadow={true}
+        />
+      </div>
+      <div>
+        <div className="mb-2 block">
+          <Label htmlFor="repeat-password" value="Repeat password" />
+        </div>
+        <TextInput
+          id="repeat-password"
+          type="password"
+          required={true}
+          shadow={true}
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <Checkbox id="agree" />
+        <Label htmlFor="agree">
+          I agree with the{" "}
+          <a
+            href="/forms"
+            className="text-blue-600 hover:underline dark:text-blue-500"
+          >
+            terms and conditions
+          </a>
+        </Label>
+      </div>
+      <Button type="submit">Register new account</Button>
+    </form>
   );
 };
 

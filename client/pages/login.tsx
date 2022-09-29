@@ -1,15 +1,15 @@
-import { ReactElement, useContext } from "react";
+import { useContext } from "react";
 import { useRouter } from "next/router";
-import Layout from "../layouts/layout";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import * as yup from "yup";
 
-import { Login as LoginType } from "../types/auth.type";
+import { AuthContextType, Login as LoginType } from "../types/auth.type";
 import AuthService from "../services/auth.service";
 import AuthContext from "../context/AuthProvider";
 import WithSecureLayout from "../layouts/withSecureLayout";
+import { TextInput, Label, Checkbox, Button } from "flowbite-react";
 
 const authService = new AuthService();
 
@@ -20,7 +20,7 @@ const schema = yup
   })
   .required();
 
-function Login() {
+function Register() {
   const { setAuth, auth } = useContext(AuthContext);
   const router = useRouter();
   const { register, handleSubmit } = useForm({
@@ -30,13 +30,8 @@ function Login() {
   async function onSubmit(event: LoginType) {
     try {
       const response = await authService.loginRequest(event);
-      setAuth((prev: any) => {
-        return { ...prev, ...response };
-      });
-
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
+      setAuth((prev: any) => ({ ...prev, ...response }));
+      router.push("/");
 
       console.log(response);
     } catch (error) {
@@ -50,30 +45,42 @@ function Login() {
     <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center mt-5 mb-5">
       <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
         <h1 className="mb-8 text-3xl text-center"> Login Page </h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            {...register("usernameOrEmail")}
-            type="text"
-            className="block border border-grey-light w-full p-3 rounded"
-            placeholder="Username or email"
-          />
-          <p className="mt-2"></p>
-          <input
-            {...register("password")}
-            type="password"
-            className="block border border-grey-light w-full p-3 rounded mt-4"
-            placeholder="password"
-          />{" "}
-          <button
-            type="submit"
-            className="w-full text-center py-3 rounded btn btn-info text-white mt-4"
-          >
-            Login
-          </button>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="email2" value="Your email or username" />
+            </div>
+            <TextInput id="email2" {...register("usernameOrEmail")} />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="password2" value="Your password" />
+            </div>
+            <TextInput
+              type="password"
+              shadow={true}
+              {...register("password")}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Checkbox id="agree" />
+            <Label htmlFor="agree">
+              I agree with the{" "}
+              <a
+                href="/forms"
+                className="text-blue-600 hover:underline dark:text-blue-500"
+              >
+                terms and conditions
+              </a>
+            </Label>
+          </div>
+          <Button type="submit">Register new account</Button>
         </form>
       </div>
     </div>
   );
 }
 
-export default WithSecureLayout(Login);
+export default WithSecureLayout(Register);

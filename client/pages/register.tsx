@@ -9,6 +9,7 @@ import { Login as LoginType } from "../types/auth.type";
 import AuthService from "../services/auth.service";
 import AuthContext from "../context/AuthProvider";
 import WithSecureLayout from "../layouts/withSecureLayout";
+import { TextInput, Label, Checkbox, Button } from "flowbite-react";
 
 const authService = new AuthService();
 
@@ -16,6 +17,7 @@ const schema = yup
   .object({
     usernameOrEmail: yup.string().required(),
     password: yup.string().required(),
+    passwordRepeat: yup.string().required(),
   })
   .required();
 
@@ -46,39 +48,51 @@ function Register() {
     <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center mt-5 mb-5">
       <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
         <h1 className="mb-8 text-3xl text-center"> Register Page </h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            {...register("usernameOrEmail")}
-            type="text"
-            className="block border border-grey-light w-full p-3 rounded"
-            placeholder="username"
-          />
-          <input
-            {...register("usernameOrEmail")}
-            type="text"
-            className="block border border-grey-light w-full p-3 rounded mt-4"
-            placeholder="email"
-          />
 
-          <input
-            {...register("password")}
-            type="password"
-            className="block border border-grey-light w-full p-3 rounded mt-4"
-            placeholder="password"
-          />
-          <input
-            {...register("password")}
-            type="password"
-            className="block border border-grey-light w-full p-3 rounded mt-4"
-            placeholder="password again"
-          />
-
-          <button
-            type="submit"
-            className="w-full text-center py-3 rounded btn btn-info text-white mt-4"
-          >
-            Register
-          </button>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="email2" value="Your email" />
+            </div>
+            <TextInput
+              id="email2"
+              placeholder="name@flowbite.com"
+              {...register("usernameOrEmail")}
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="password2" value="Your password" />
+            </div>
+            <TextInput
+              type="password"
+              shadow={true}
+              {...register("password")}
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="repeat-password" value="Repeat password" />
+            </div>
+            <TextInput
+              type="password"
+              shadow={true}
+              {...register("password2")}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox id="agree" />
+            <Label htmlFor="agree">
+              I agree with the{" "}
+              <a
+                href="/forms"
+                className="text-blue-600 hover:underline dark:text-blue-500"
+              >
+                terms and conditions
+              </a>
+            </Label>
+          </div>
+          <Button type="submit">Register new account</Button>
         </form>
       </div>
     </div>
