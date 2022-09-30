@@ -32,7 +32,6 @@ export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("triggered", user.id);
     if (user.id) {
       setAuth((prev) => {
         return { ...prev, isAuth: true };
@@ -43,6 +42,7 @@ export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   function logOut() {
     httpClient.get("/auth/logout");
     setAuth(initialAuthValue);
+    setUser(initialUserValue);
     setTimeout(() => {
       router.push("/");
     }, 500);

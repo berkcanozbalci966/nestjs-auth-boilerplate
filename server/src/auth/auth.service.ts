@@ -33,7 +33,7 @@ export class AuthService {
     await this.tokenService.addNewRefreshToken(user.id, refreshToken);
 
     return {
-      ...user,
+      user,
       refreshToken: this.tokenService.encodeToken(refreshToken),
       accessToken,
     };

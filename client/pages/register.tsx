@@ -1,25 +1,25 @@
+import * as yup from "yup";
 import { useContext } from "react";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 
-import * as yup from "yup";
-
-import { Login as LoginType, Register } from "../types/auth.type";
-import AuthService from "../services/auth.service";
-import AuthContext from "../context/AuthProvider";
 import WithSecureLayout from "../layouts/withSecureLayout";
+import AuthContext from "../context/AuthProvider";
+import AuthService from "../services/auth.service";
+
+import { yupResolver } from "@hookform/resolvers/yup";
 import { TextInput, Label, Checkbox, Button } from "flowbite-react";
+import AlertComponent from "../components/form/alert";
 
 const authService = new AuthService();
 
 const schema = yup
   .object({
-    username: yup.string().required(),
-    email: yup.string().required(),
-    password: yup.string().required(),
-    name: yup.string().required(),
-    surname: yup.string().required(),
+    username: yup.string().required().min(4).max(40),
+    email: yup.string().email().required(),
+    password: yup.string().required().min(6).max(25),
+    name: yup.string().required().min(1).max(50),
+    surname: yup.string().required().min(1).max(50),
     passwordRepeat: yup
       .string()
       .required("Please retype your password.")
@@ -28,9 +28,13 @@ const schema = yup
   .required();
 
 function RegisterPage() {
-  const { setAuth, auth } = useContext(AuthContext);
+  const { setAuth, auth, setUser } = useContext(AuthContext);
   const router = useRouter();
-  const { register, handleSubmit } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -38,12 +42,13 @@ function RegisterPage() {
     try {
       const { passwordRepeat, ...dataWithoutRepeatedPassword } = event;
 
-      const response = await authService.register(dataWithoutRepeatedPassword);
-      setAuth((prev: any) => ({ ...prev, ...response }));
+      const response: any = await authService.register(
+        dataWithoutRepeatedPassword
+      );
 
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
+      setUser((prev: any) => ({ ...prev, ...response.user }));
+
+      router.push("/");
 
       console.log(response);
     } catch (error) {
@@ -65,6 +70,7 @@ function RegisterPage() {
                 <Label htmlFor="Name" value="Name" />
               </div>
               <TextInput id="Name" {...register("name")} />
+              {errors.name && <AlertComponent message="Name error!" />}
             </div>
 
             <div>
@@ -72,6 +78,7 @@ function RegisterPage() {
                 <Label htmlFor="Surname" value="Surname" />
               </div>
               <TextInput id="Surname" {...register("surname")} />
+              {errors.surname && <AlertComponent message="Surname error!" />}
             </div>
           </div>
 
@@ -80,6 +87,7 @@ function RegisterPage() {
               <Label htmlFor="username" value="Username" />
             </div>
             <TextInput id="username" {...register("username")} />
+            {errors.username && <AlertComponent message="Name error!" />}
           </div>
 
           <div>
@@ -91,6 +99,7 @@ function RegisterPage() {
               placeholder="name@flowbite.com"
               {...register("email")}
             />
+            {errors.email && <AlertComponent message="Email error!" />}
           </div>
 
           <div>
@@ -102,6 +111,7 @@ function RegisterPage() {
               shadow={true}
               {...register("password")}
             />
+            {errors.password && <AlertComponent message="Password error!" />}
           </div>
           <div>
             <div className="mb-2 block">
@@ -112,6 +122,9 @@ function RegisterPage() {
               shadow={true}
               {...register("passwordRepeat")}
             />
+            {errors.passwordRepeat && (
+              <AlertComponent message="Password again!" />
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Checkbox id="agree" />

@@ -29,13 +29,17 @@ function Register() {
 
   async function onSubmit(event: LoginType) {
     try {
-      const response: any = await authService.login(event);
-      const { user, ...authInfo } = response.user;
-      setAuth((prev: any) => ({ ...prev, ...authInfo }));
-      setUser((prev: any) => ({ ...prev, ...user }));
-      router.push("/");
+      authService.login(event).then((response: any) => {
+        const { user, ...authInfo } = response;
 
-      console.log(response);
+        setAuth((prev: any) => ({ ...prev, ...authInfo }));
+
+        setUser((prev: any) => ({ ...prev, ...user }));
+
+        router.push("/");
+
+        console.log(response);
+      });
     } catch (error) {
       setAuth((prev: any) => {
         return { ...prev, name: "Error" };

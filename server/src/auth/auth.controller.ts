@@ -1,4 +1,4 @@
-import { UserEntity } from './../users/user.entity';
+import { UserEntity, UserInfo } from './../users/user.entity';
 import { AuthService } from './auth.service';
 import {
   Body,
@@ -33,13 +33,19 @@ export class AuthController {
     @Body() body: CreateUserDto,
     @Res({ passthrough: true }) response: FastifyRequestTypeWithCookie,
   ): Promise<UserEntity> {
-    const user = await this.authService.signup(body);
-    response.setCookie(Cookie.REFRESH_TOKEN, user.refreshToken, {
+    const { user, refreshToken, accessToken } = await this.authService.signup(
+      body,
+    );
+    response.setCookie(Cookie.REFRESH_TOKEN, refreshToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
     });
-    return new UserEntity(user);
+    return new UserEntity({
+      accessToken,
+      refreshToken,
+      user: new UserInfo(user),
+    });
   }
 
   @Public()
