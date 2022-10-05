@@ -1,4 +1,3 @@
-import * as yup from "yup";
 import { useContext } from "react";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
@@ -10,22 +9,9 @@ import AuthService from "../services/auth.service";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextInput, Label, Checkbox, Button } from "flowbite-react";
 import AlertComponent from "../components/form/alert";
+import { RegisterSchema } from "../validations/register.schema";
 
 const authService = new AuthService();
-
-const schema = yup
-  .object({
-    username: yup.string().required().min(4).max(40),
-    email: yup.string().email().required(),
-    password: yup.string().required().min(6).max(25),
-    name: yup.string().required().min(1).max(50),
-    surname: yup.string().required().min(1).max(50),
-    passwordRepeat: yup
-      .string()
-      .required("Please retype your password.")
-      .oneOf([yup.ref("password")], "Your passwords do not match."),
-  })
-  .required();
 
 function RegisterPage() {
   const { setAuth, auth, setUser } = useContext(AuthContext);
@@ -35,7 +21,7 @@ function RegisterPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(RegisterSchema),
   });
 
   async function onSubmit(event: any) {

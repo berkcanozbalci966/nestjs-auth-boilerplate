@@ -1,35 +1,35 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import * as yup from "yup";
 
 import { Login as LoginType } from "../types/auth.type";
 import AuthService from "../services/auth.service";
 import AuthContext from "../context/AuthProvider";
 import WithSecureLayout from "../layouts/withSecureLayout";
 import { TextInput, Label, Checkbox, Button } from "flowbite-react";
+import AlertComponent from "../components/form/alert";
+import { LoginSchema } from "../validations/login.schema";
 
 const authService = new AuthService();
 
-const schema = yup
-  .object({
-    usernameOrEmail: yup.string().required(),
-    password: yup.string().required(),
-  })
-  .required();
-
 function Register() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(LoginSchema),
+  });
+
   const { setAuth, auth, setUser } = useContext(AuthContext);
   const router = useRouter();
-  const { register, handleSubmit } = useForm({
-    resolver: yupResolver(schema),
-  });
+  const [LoginButtonDisable, setLoginButtonDisable] = useState(false);
 
   async function onSubmit(event: LoginType) {
     try {
-      authService.login(event).then((response: any) => {
+      setLoginButtonDisable(true);
+      await authService.login(event).then((response: any) => {
         const { user, ...authInfo } = response;
 
         setAuth((prev: any) => ({ ...prev, ...authInfo }));
@@ -41,7 +41,10 @@ function Register() {
         console.log(response);
       });
     } catch (error) {
-      setAuth((prev: any) => {
+      setTimeout(() => {
+        setLoginButtonDisable(false);
+      }, 1000);
+      setUser((prev: any) => {
         return { ...prev, name: "Error" };
       });
     }
@@ -55,9 +58,10 @@ function Register() {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div>
             <div className="mb-2 block">
-              <Label htmlFor="email2" value="Your email or username" />
+              <Label htmlFor="usernameOrEmail" value="Your email or username" />
             </div>
-            <TextInput id="email2" {...register("usernameOrEmail")} />
+            <TextInput id="usernameOrEmail" {...register("usernameOrEmail")} />
+            {errors.usernameOrEmail && <AlertComponent message="Name error!" />}
           </div>
           <div>
             <div className="mb-2 block">
@@ -68,21 +72,21 @@ function Register() {
               shadow={true}
               {...register("password")}
             />
+            {errors.password && <AlertComponent message="Password error!" />}
           </div>
 
           <div className="flex items-center gap-2">
             <Checkbox id="agree" />
             <Label htmlFor="agree">
               I agree with the{" "}
-              <a
-                href="/forms"
-                className="text-blue-600 hover:underline dark:text-blue-500"
-              >
+              <a className="text-blue-600 hover:underline dark:text-blue-500">
                 terms and conditions
               </a>
             </Label>
           </div>
-          <Button type="submit">Login</Button>
+          <Button type="submit" disabled={LoginButtonDisable}>
+            Login
+          </Button>
         </form>
       </div>
     </div>

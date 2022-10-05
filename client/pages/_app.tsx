@@ -4,8 +4,9 @@ import type { AppProps } from "next/app";
 import { ReactNode, ReactElement } from "react";
 import { AuthProvider } from "./../context/AuthProvider";
 import { GeneralContextProvider } from "../context/GeneralProvider";
-import { Flowbite, Spinner } from "flowbite-react";
+import { Flowbite } from "flowbite-react";
 import { flowbiteTheme as theme } from "../theme";
+import { ToastContainer, toast } from "react-toastify";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -28,6 +29,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
           )}
         </AuthProvider>
       </GeneralContextProvider>
+      <ToastContainer />
     </>
   );
 }
