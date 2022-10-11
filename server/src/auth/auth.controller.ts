@@ -83,10 +83,7 @@ export class AuthController {
   @Post('/refresh')
   @UseGuards(RtGuard)
   refreshTokens(@Request() req) {
-    return this.authService.refreshAccessToken(
-      req.user.sub,
-      req.user.refreshToken,
-    );
+    return this.authService.refreshAccessToken(req.user, req.user.refreshToken);
   }
 
   @Public()

@@ -29,7 +29,10 @@ export class AuthService {
 
   async signup(userInfo: any) {
     const user = await this.createUser(userInfo);
-    const { refreshToken, accessToken } = await this.getToken(user.id);
+    const { refreshToken, accessToken } = await this.getToken(
+      user.id,
+      user.role,
+    );
     await this.tokenService.addNewRefreshToken(user.id, refreshToken);
 
     return {
@@ -62,7 +65,10 @@ export class AuthService {
   async login(userLoginParams: UserLoginParams) {
     const user = await this.validateUser(userLoginParams);
 
-    const { refreshToken, accessToken } = await this.getToken(user.id);
+    const { refreshToken, accessToken } = await this.getToken(
+      user.id,
+      user.role,
+    );
 
     const userTokenCount = user.tokens.length;
 
@@ -77,6 +83,7 @@ export class AuthService {
       accessToken,
       user: {
         id: user.id,
+        role: user.role,
       },
     };
   }
@@ -113,7 +120,7 @@ export class AuthService {
     return await this.usersService.createUserForgetKey(user.id);
   }
 
-  async refreshAccessToken(userId: number, refreshToken: string) {
+  async refreshAccessToken(user: any, refreshToken: string) {
     const refreshTokenIsFounded = await this.tokenService.findRefreshToken(
       refreshToken,
     );
@@ -121,16 +128,24 @@ export class AuthService {
     if (!refreshTokenIsFounded) {
       throw new BadRequestException();
     }
+    const jwtPayload = await this.tokenService.jwtPayloadGenerator(
+      user.sub,
+      user.role,
+    );
 
-    const accessToken = await this.tokenService.getAccessToken(userId);
+    const accessToken = await this.tokenService.getAccessToken(jwtPayload);
 
     return { accessToken };
   }
 
-  async getToken(userId: number): Promise<LoginTokens> {
+  async getToken(userId: number, role: string): Promise<LoginTokens> {
+    const jwtPayload = await this.tokenService.jwtPayloadGenerator(
+      userId,
+      role,
+    );
     const [at, rt] = await Promise.all([
-      this.tokenService.getAccessToken(userId),
-      this.tokenService.getRefreshToken(userId),
+      this.tokenService.getAccessToken(jwtPayload),
+      this.tokenService.getRefreshToken(jwtPayload),
     ]);
 
     return {

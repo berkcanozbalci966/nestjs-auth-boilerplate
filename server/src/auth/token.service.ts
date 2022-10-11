@@ -10,22 +10,14 @@ import { PrismaService } from './../prisma/prisma.service';
 @Injectable()
 export class TokenService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
-  getAccessToken(userId: number): Promise<string> {
-    const jwtPayload = {
-      sub: userId,
-    };
-
+  getAccessToken(jwtPayload: any): Promise<string> {
     return this.jwtService.signAsync(jwtPayload, {
       secret: jwtConstants.at_secret,
       expiresIn: '1m',
     });
   }
 
-  getRefreshToken(userId: number): Promise<string> {
-    const jwtPayload = {
-      sub: userId,
-    };
-
+  getRefreshToken(jwtPayload: any): Promise<string> {
     return this.jwtService.signAsync(jwtPayload, {
       secret: jwtConstants.rt_secret,
       expiresIn: '7d',
@@ -133,5 +125,12 @@ export class TokenService {
         userId,
       },
     });
+  }
+
+  async jwtPayloadGenerator(userId: number, role: string) {
+    return {
+      sub: userId,
+      role,
+    };
   }
 }

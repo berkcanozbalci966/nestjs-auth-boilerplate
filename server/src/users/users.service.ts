@@ -14,6 +14,7 @@ const userSelect = {
     password: true,
     passwordForgetKey: true,
     tokens: true,
+    role: true,
   },
 };
 
