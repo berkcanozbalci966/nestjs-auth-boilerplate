@@ -2,15 +2,12 @@ import React, { useContext } from "react";
 import AuthContext from "../context/AuthProvider";
 
 const Dashboard = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, user } = useContext(AuthContext);
 
   return (
     <>
       <div>Dashboard</div>
-      <>
-        <p>ID: {auth.userId}</p>
-        <p>Name : {auth.name} </p>
-      </>
+      ID: {user.id}
     </>
   );
 };

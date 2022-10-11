@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import Navbar from "../components/navbar";
+import Navbar from "../components/navbar/navbar";
 import Footer from "../components/footer";
 import useHttpClient from "./../hooks/useHttpClient";
 import useAuth from "../hooks/useAuth";

@@ -1,11 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
-import AuthContext from "../context/AuthProvider";
-import { Navbar, Dropdown, Avatar } from "flowbite-react";
+import AuthContext from "../../context/AuthProvider";
+import { Navbar } from "flowbite-react";
+import UserNavCard from "./UserNavCard";
+import SecureNavList from "./SecureNavList";
+import PublicNavList from "./PublicNavList";
 
 const NavbarComponent: React.FC = () => {
-  const { auth, logOut } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   return (
     <Navbar fluid={true} rounded={true}>
       <Navbar.Brand>
@@ -76,44 +79,9 @@ const NavbarComponent: React.FC = () => {
         </Link>
       </Navbar.Brand>
 
-      {auth.isAuth && (
-        <div className="flex md:order-1">
-          <Dropdown
-            arrowIcon={false}
-            inline={true}
-            label={
-              <Avatar
-                alt="User settings"
-                img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                rounded={true}
-              />
-            }
-          >
-            <Dropdown.Header>
-              <span className="block text-sm">Bonnie Green</span>
-              <span className="block truncate text-sm font-medium">
-                name@flowbite.com
-              </span>
-            </Dropdown.Header>
-            <Dropdown.Item>
-              <Link href="/">Dashboard</Link>
-            </Dropdown.Item>
-            <Dropdown.Item>Settings</Dropdown.Item>
-            <Dropdown.Item>Earnings</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={() => logOut()}>Sign out</Dropdown.Item>
-          </Dropdown>
-          <Navbar.Toggle />
-        </div>
-      )}
-
-      <Navbar.Collapse>
-        <Link href="/">Home</Link>
-        <Link href="/login">Login</Link>
-        <Link href="/register">Register</Link>
-        <Link href="/test">Test</Link>
-        <Link href="/test">Test</Link>
-      </Navbar.Collapse>
+      {auth.isAuth && <UserNavCard />}
+      <Navbar.Toggle />
+      {auth.isAuth ? <SecureNavList /> : <PublicNavList />}
     </Navbar>
   );
 };
