@@ -5,6 +5,10 @@ const nextConfig = {
   images: {
     domains: ["flowbite.com"],
   },
+  i18n: {
+    locales: ["en-US", "tr"],
+    defaultLocale: "tr",
+  },
 };
 
 module.exports = nextConfig;

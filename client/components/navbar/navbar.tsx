@@ -2,10 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthProvider";
-import { Navbar } from "flowbite-react";
+import { Navbar, Dropdown } from "flowbite-react";
 import UserNavCard from "./UserNavCard";
 import SecureNavList from "./SecureNavList";
 import PublicNavList from "./PublicNavList";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const NavbarComponent: React.FC = () => {
   const { auth } = useContext(AuthContext);
@@ -82,6 +83,7 @@ const NavbarComponent: React.FC = () => {
       {auth.isAuth && <UserNavCard />}
       <Navbar.Toggle />
       {auth.isAuth ? <SecureNavList /> : <PublicNavList />}
+      {!auth.isAuth && <LanguageSwitcher />}
     </Navbar>
   );
 };

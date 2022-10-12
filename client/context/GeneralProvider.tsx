@@ -9,22 +9,27 @@ type GeneralContextType = {
   generalState: {
     firstRender: boolean;
   };
+  language: string;
 };
 
 const initialValue = {
-  firstRender: true,
+  generalState: {
+    firstRender: true,
+  },
+  language: "tr",
 };
 
 const GeneralContext = createContext<GeneralContextType>({
-  generalState: initialValue,
+  ...initialValue,
 } as GeneralContextType);
 
 export const GeneralContextProvider: React.FC<Provider> = ({ children }) => {
   const [firstRender, setFirstRender] = useState(true);
+  const [language, setLanguage] = useState("tr");
 
   return (
     <GeneralContext.Provider
-      value={{ generalState: { firstRender }, setFirstRender }}
+      value={{ generalState: { firstRender }, setFirstRender, language }}
     >
       {children}
     </GeneralContext.Provider>
