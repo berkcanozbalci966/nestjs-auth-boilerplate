@@ -1,57 +1,20 @@
 import React from "react";
-import { TextInput, Label, Checkbox, Button } from "flowbite-react";
 
 const Home = () => {
   return (
-    <form className="flex flex-col gap-4">
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="email2" value="Your email" />
+    <div className="hero bg-base-200" style={{ height: "1200px" }}>
+      <div className="hero-content text-center">
+        <div className="max-w-md">
+          <h1 className="text-5xl font-bold">Hello there</h1>
+          <p className="py-6">
+            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
+            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
+            a id nisi.
+          </p>
+          <button className="btn btn-primary">Get Started</button>
         </div>
-        <TextInput
-          id="email2"
-          type="email"
-          placeholder="name@flowbite.com"
-          required={true}
-          shadow={true}
-        />
       </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="password2" value="Your password" />
-        </div>
-        <TextInput
-          id="password2"
-          type="password"
-          required={true}
-          shadow={true}
-        />
-      </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="repeat-password" value="Repeat password" />
-        </div>
-        <TextInput
-          id="repeat-password"
-          type="password"
-          required={true}
-          shadow={true}
-        />
-      </div>
-      <div className="flex items-center gap-2">
-        <Checkbox id="agree" />
-        <Label htmlFor="agree">
-          I agree with the{" "}
-          <a
-            href="/forms"
-            className="text-blue-600 hover:underline dark:text-blue-500"
-          >
-            terms and conditions
-          </a>
-        </Label>
-      </div>
-      <Button type="submit">Register new account</Button>
-    </form>
+    </div>
   );
 };
 

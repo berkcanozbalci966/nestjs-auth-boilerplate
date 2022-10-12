@@ -67,17 +67,16 @@ const Layout = ({ children }: Layout) => {
   }, [firstAuthLoading, auth.accessToken]);
 
   return (
-    <div
-      className="flex flex-col container mx-auto px-4"
-      style={{ minHeight: "100vh" }}
-    >
-      <Navbar />
-      <main className="flex-grow container px-5 py-24 mx-auto mb-5">
-        {children}
-      </main>
-      <div style={{ marginTop: "250px" }}>{JSON.stringify(user, null, 4)}</div>
-      <Footer />
-    </div>
+    <>
+      <div className="min-h-screen flex flex-col">
+        <div className="container mx-auto px-4 mb-5">
+          <Navbar />
+
+          <main>{children}</main>
+        </div>
+        <Footer />
+      </div>
+    </>
   );
 };
 

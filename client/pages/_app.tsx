@@ -4,8 +4,6 @@ import type { AppProps } from "next/app";
 import { ReactNode, ReactElement } from "react";
 import { AuthProvider } from "./../context/AuthProvider";
 import { GeneralContextProvider } from "../context/GeneralProvider";
-import { Flowbite } from "flowbite-react";
-import { flowbiteTheme as theme } from "../theme";
 import { ToastContainer, toast } from "react-toastify";
 
 type NextPageWithLayout = NextPage & {
@@ -21,13 +19,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <GeneralContextProvider>
-        <AuthProvider>
-          {getLayout(
-            <Flowbite theme={{ theme }}>
-              <Component {...pageProps} />
-            </Flowbite>
-          )}
-        </AuthProvider>
+        <AuthProvider>{getLayout(<Component {...pageProps} />)}</AuthProvider>
       </GeneralContextProvider>
       <ToastContainer />
     </>

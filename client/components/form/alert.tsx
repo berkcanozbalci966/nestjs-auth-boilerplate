@@ -1,4 +1,3 @@
-import { Alert } from "flowbite-react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
 
@@ -8,9 +7,9 @@ type Props = {
 
 const AlertComponent: React.FC<Props> = ({ message }) => {
   return (
-    <Alert color="failure" icon={InformationCircleIcon}>
+    <h1 color="failure">
       <span>{message}</span>
-    </Alert>
+    </h1>
   );
 };
 
