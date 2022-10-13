@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosInstance } from "axios";
-import HttpClient from "../utils/http-client";
 import { useContext, useEffect } from "react";
 import AuthContext from "../context/AuthProvider";
 
@@ -13,6 +12,7 @@ const config: AxiosRequestConfig = {
 };
 
 const _axios: AxiosInstance = axios.create(config);
+
 const useHttpClient = () => {
   const { auth, setAuth } = useContext(AuthContext);
 
@@ -45,9 +45,6 @@ const useHttpClient = () => {
 
     const requestInterceptor = _axios.interceptors.request.use((config) => {
       if (config.headers) {
-        if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
-        }
         config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
       }
       return config;

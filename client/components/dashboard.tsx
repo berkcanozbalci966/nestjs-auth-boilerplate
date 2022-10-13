@@ -12,6 +12,7 @@ const Dashboard = () => {
     <>
       <div>Dashboard</div>
       ID: {user.id}
+      <br />
       LANG : {language}
       <br />
       Hello : {tl("hello")}
