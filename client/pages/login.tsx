@@ -9,6 +9,7 @@ import AuthContext from "../context/AuthProvider";
 import WithSecureLayout from "../layouts/withSecureLayout";
 import AlertComponent from "../components/form/alert";
 import { LoginSchema } from "../validations/login.schema";
+import toastEmitter from "../utils/toast-emitter";
 
 const authService = new AuthService();
 
@@ -34,12 +35,13 @@ function Register() {
         setAuth((prev: any) => ({ ...prev, ...authInfo }));
 
         setUser((prev: any) => ({ ...prev, ...user }));
-
+        toastEmitter("info", "başarıyla giriş yapıldı");
         router.push("/");
 
         console.log(response);
       });
     } catch (error) {
+      toastEmitter("error", "Giriş yapılamadı");
       setTimeout(() => {
         setLoginButtonDisable(false);
       }, 1000);

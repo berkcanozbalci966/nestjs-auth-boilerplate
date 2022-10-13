@@ -4,7 +4,8 @@ import type { AppProps } from "next/app";
 import { ReactNode, ReactElement } from "react";
 import { AuthProvider } from "./../context/AuthProvider";
 import { GeneralContextProvider } from "../context/GeneralProvider";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
