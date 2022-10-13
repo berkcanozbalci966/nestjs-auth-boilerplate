@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 type Provider = {
   children: ReactNode;
@@ -25,7 +26,12 @@ const GeneralContext = createContext<GeneralContextType>({
 
 export const GeneralContextProvider: React.FC<Provider> = ({ children }) => {
   const [firstRender, setFirstRender] = useState(true);
-  const [language, setLanguage] = useState("tr");
+  const router = useRouter();
+  const [language, setLanguage] = useState(router.locale as string);
+
+  useEffect(() => {
+    setLanguage(router?.locale as string);
+  }, [router?.locale]);
 
   return (
     <GeneralContext.Provider

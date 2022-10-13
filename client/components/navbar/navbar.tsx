@@ -105,6 +105,7 @@ const NavbarComponent: React.FC = () => {
         </ul>
       </div>
       <div className="navbar-end">{auth.isAuth && <UserNavCard />}</div>
+      <LanguageSwitcher />
     </div>
   );
 };
