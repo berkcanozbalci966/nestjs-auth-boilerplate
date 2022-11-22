@@ -1,22 +1,41 @@
-import { useContext } from "react";
-import GeneralContext from "../context/GeneralProvider";
-import tr from "../i18/tr/tr";
-import en from "../i18/en/en-US";
+import trJson from "../i18/tr/tr";
+import enJson from "../i18/en/en-US";
 
-const useTranslate = (module: string) => {
-  const { language } = useContext(GeneralContext);
-  const trModule = (tr as any)[module];
-  const enModule = (en as any)[module];
+type TranslateObject<T> = {
+  [Property in keyof T]: TranslateObject<T[Property]>;
+};
 
-  return (word: string) => {
+type NestedKeyOrCurrentKey<T> = keyof T extends {} ? T[keyof T] : keyof T;
+
+type TranslateObjectWithModule<T> = keyof T extends {}
+  ? NestedKeyOrCurrentKey<TranslateObject<T>>
+  : TranslateObject<T>;
+
+export const useTranslate = (module?: keyof TranslateObject<typeof trJson>) => {
+  const currentLang = JSON.parse(localStorage.getItem("lng") as string);
+  1;
+  const tr = module
+    ? (trJson[module] as TranslateObjectWithModule<typeof trJson>)
+    : (trJson as TranslateObject<typeof trJson>);
+
+  const en = module
+    ? (enJson[module] as TranslateObjectWithModule<typeof enJson>)
+    : (enJson as TranslateObject<typeof enJson>);
+
+  return (
+    word: string
+    // word: keyof typeof trJson extends {}
+    //   ? keyof NestedKeyOrCurrentKey<TranslateObject<typeof trJson>>
+    //   : keyof TranslateObject<typeof trJson> & string
+  ) => {
     try {
       return (
-        (language == "tr" ? trModule[word] : (enModule as any)[word]) || word
+        (currentLang == "tr"
+          ? (tr as TranslateObjectWithModule<typeof tr>)[word]
+          : (en as TranslateObjectWithModule<typeof tr>)[word]) || word
       );
     } catch (error) {
       return word;
     }
   };
 };
-
-export default useTranslate;

@@ -1,4 +1,6 @@
 {
   "hello": "selam şekerim",
-  "test": "analiz"
+  "test": "analiz",
+  "login": "Giriş Yap",
+  "home": "Ana Sayfa"
 }

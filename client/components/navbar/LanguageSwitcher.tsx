@@ -11,6 +11,8 @@ const LanguageSwitcher = () => {
         document.activeElement.blur();
       }
 
+      localStorage.setItem('lng',JSON.stringify(localeString))
+
       return push({ pathname }, asPath, { locale: localeString });
     }
   }

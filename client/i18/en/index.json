@@ -1,4 +1,6 @@
 {
   "hello": "hello bro",
-  "test": "test"
+  "test": "test",
+  "login": "Login",
+  "home": "Home"
 }

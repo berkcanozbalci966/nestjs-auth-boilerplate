@@ -48,6 +48,7 @@ export default class HttpClient {
 
     return Body;
   }
+
   async errorResponseInterceptor(axiosError: any) {
     const prevRequest = axiosError?.config;
 

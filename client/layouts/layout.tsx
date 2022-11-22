@@ -1,10 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import Navbar from "../components/navbar/navbar";
 import Footer from "../components/footer";
-import useAuth from "../hooks/useAuth";
-import TopicContainer from "../components/Topic/TopicContainer";
-import CategoryContainer from "../components/Categories/CategoryContainer";
-import { CategoryService } from "../services/category.service";
 import AuthService from "../services/auth.service";
 import { useProfile } from './../hooks/useProfile';
 

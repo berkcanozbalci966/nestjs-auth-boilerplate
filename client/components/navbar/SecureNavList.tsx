@@ -1,13 +1,19 @@
 import Link from "next/link";
+import { useTranslate } from "../../hooks/useTranslate";
 
 const SecureNavList = () => {
+  const tl = useTranslate("index")
+ 
+  
+
+
   return (
     <>
       <li>
-        <Link href="/">Home</Link>
+        <Link href="/"> {tl("home")} </Link>
       </li>
      <li>
-        <Link href="/login">Login</Link>
+        <Link href="/login"> {tl("login")} </Link>
       </li>
     </>
 
