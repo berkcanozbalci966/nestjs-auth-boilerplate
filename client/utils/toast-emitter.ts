@@ -5,7 +5,7 @@ type toastType = "info" | "success" | "warn" | "error";
 export default (type: toastType, message: string) => {
   const payload = {
     position: "top-right",
-    autoClose: 1000,
+    autoClose: 500,
     hideProgressBar: false,
     closeOnClick: false,
     pauseOnHover: false,
@@ -21,7 +21,7 @@ export default (type: toastType, message: string) => {
 export const toastEmitterAsync = async (type: toastType, message: string) => {
   const payload = {
     position: "top-right",
-    autoClose: 1000,
+    autoClose: 500,
     hideProgressBar: false,
     closeOnClick: false,
     pauseOnHover: false,

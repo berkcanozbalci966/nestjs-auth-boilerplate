@@ -1,7 +1,14 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import Layout from "../layouts/layout";
+import { useRouter } from "next/router";
 
 export default function ErrorPage() {
+  const { push } = useRouter();
+  useEffect(() => {
+    setTimeout(() => {
+      push("/");
+    }, 500);
+  }, []);
   return (
     <>
       <div>

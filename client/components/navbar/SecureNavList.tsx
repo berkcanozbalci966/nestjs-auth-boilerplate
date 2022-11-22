@@ -7,7 +7,7 @@ const SecureNavList = () => {
         <Link href="/">Home</Link>
       </li>
      <li>
-        <Link href="/">Home</Link>
+        <Link href="/login">Login</Link>
       </li>
     </>
 

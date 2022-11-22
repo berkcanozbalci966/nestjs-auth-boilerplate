@@ -3,22 +3,13 @@ import { Layout } from "../types/layout.type";
 import AuthContext from "./../context/AuthProvider";
 import { useRouter } from "next/router";
 import ErrorPage from "../pages/error";
+import { useSecureRoute } from "../hooks/useSecureRoute";
 
 const SecureLayout = ({ children }: Layout) => {
-  const { auth } = useContext(AuthContext);
-  const router = useRouter();
 
-  const disableSecureRoutes = ["/login", "/register"];
+  const {isForbidden} = useSecureRoute()
 
-  const isDisableRoute = disableSecureRoutes.includes(router.pathname);
-
-  useEffect(() => {
-    if (auth.isAuth && isDisableRoute) {
-      router.push("/");
-    }
-  }, [router.pathname]);
-
-  return <>{auth.isAuth && isDisableRoute ? <ErrorPage /> : children}</>;
+  return <>{isForbidden ? <ErrorPage /> : children}</>;
 };
 
 export default SecureLayout;

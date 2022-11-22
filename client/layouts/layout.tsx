@@ -6,6 +6,7 @@ import TopicContainer from "../components/Topic/TopicContainer";
 import CategoryContainer from "../components/Categories/CategoryContainer";
 import { CategoryService } from "../services/category.service";
 import AuthService from "../services/auth.service";
+import { useProfile } from './../hooks/useProfile';
 
 type Layout = {
   children: ReactNode;
@@ -16,20 +17,7 @@ type Layout = {
 const authService = new AuthService();
 
 const Layout = ({ children }: Layout) => {
-  const { setUser, auth, isFirstProfileCall, setIsFirstProfileCall } =
-    useAuth();
-
-  useEffect(() => {
-    async function getProfile() {
-      await authService.profile().then((res: any) => {
-        setUser((prev: any) => ({ ...prev, ...res.user }));
-      });
-    }
-    if (!auth.isAuth && isFirstProfileCall) {
-      getProfile();
-      setIsFirstProfileCall(false);
-    }
-  }, []);
+  useProfile()
 
   return (
     <>
