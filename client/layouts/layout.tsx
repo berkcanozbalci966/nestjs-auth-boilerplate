@@ -1,78 +1,42 @@
 import { ReactNode, useEffect, useState } from "react";
 import Navbar from "../components/navbar/navbar";
 import Footer from "../components/footer";
-import useHttpClient from "./../hooks/useHttpClient";
 import useAuth from "../hooks/useAuth";
+import TopicContainer from "../components/Topic/TopicContainer";
+import CategoryContainer from "../components/Categories/CategoryContainer";
+import { CategoryService } from "../services/category.service";
+import AuthService from "../services/auth.service";
 
 type Layout = {
   children: ReactNode;
+  topics?: any;
 };
 
+
+const authService = new AuthService();
+
 const Layout = ({ children }: Layout) => {
-  const {
-    auth,
-    setAuth,
-    setRefreshRequestResponse,
-    refresRequestResponse,
-    accessRequestResponse,
-    setAccessRequestResponse,
-    user,
-    setUser,
-  } = useAuth();
-  const [firstAuthLoading, setFirstAuthLoading] = useState(true);
-  const newHttpClient = useHttpClient();
+  const { setUser, auth, isFirstProfileCall, setIsFirstProfileCall } =
+    useAuth();
 
   useEffect(() => {
     async function getProfile() {
-      return await newHttpClient
-        .post("/auth/refresh")
-        .then((response: any) => {
-          setAuth((prev: any) => {
-            return { ...prev, ...response };
-          });
-          setRefreshRequestResponse(true);
-          setFirstAuthLoading(false);
-
-          return;
-        })
-        .catch(() => {
-          setRefreshRequestResponse(false);
-          setAccessRequestResponse(false);
-        });
+      await authService.profile().then((res: any) => {
+        setUser((prev: any) => ({ ...prev, ...res.user }));
+      });
     }
-
-    if (!auth.isAuth && !auth.accessToken && refresRequestResponse) {
+    if (!auth.isAuth && isFirstProfileCall) {
       getProfile();
+      setIsFirstProfileCall(false);
     }
-
-    return () => {};
-  }, [user.id, auth.accessToken, firstAuthLoading]);
-
-  useEffect(() => {
-    async function getProfile() {
-      await newHttpClient
-        .get("/auth/profile")
-        .then((res: any) => {
-          setUser((prev: any) => ({ ...prev, ...res.user }));
-          setAccessRequestResponse(false);
-        })
-        .catch(() => {
-          setAccessRequestResponse(false);
-        });
-    }
-
-    if (accessRequestResponse && auth.accessToken) {
-      getProfile();
-    }
-  }, [firstAuthLoading, auth.accessToken]);
+  }, []);
 
   return (
     <>
       <div className="min-h-screen flex flex-col">
         <div className="container mx-auto px-4 mb-5">
           <Navbar />
-
-          <main>{children}</main>
+            <main>{children}</main>
         </div>
         <Footer />
       </div>

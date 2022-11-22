@@ -7,7 +7,7 @@ module.exports = {
     "./public/**/*.html",
   ],
   daisyui: {
-    themes: ["cmyk"],
+    themes: ["bumblebee"],
   },
   plugins: [require("daisyui")],
 };

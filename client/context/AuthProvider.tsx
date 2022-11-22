@@ -11,7 +11,6 @@ const httpClient = new HttpClient();
 const initialAuthValue = {
   name: "",
   isAuth: false,
-  accessToken: "",
 };
 
 const initialUserValue = {
@@ -20,15 +19,15 @@ const initialUserValue = {
 
 const AuthContext = createContext<AuthContextType>({
   auth: initialAuthValue,
-  refresRequestResponse: true,
   user: initialUserValue,
+  isFirstProfileCall: true,
 } as AuthContextType);
 
 export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
   const [auth, setAuth] = useState(initialAuthValue);
   const [user, setUser] = useState(initialUserValue);
-  const [refresRequestResponse, setRefreshRequestResponse] = useState(true);
-  const [accessRequestResponse, setAccessRequestResponse] = useState(true);
+  const [isFirstProfileCall, setIsFirstProfileCall] = useState(true);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -54,12 +53,10 @@ export const AuthProvider: React.FC<AuthProviderType> = ({ children }) => {
         auth,
         setAuth,
         logOut,
-        refresRequestResponse,
-        setRefreshRequestResponse,
-        accessRequestResponse,
-        setAccessRequestResponse,
         user,
         setUser,
+        isFirstProfileCall,
+        setIsFirstProfileCall,
       }}
     >
       {children}

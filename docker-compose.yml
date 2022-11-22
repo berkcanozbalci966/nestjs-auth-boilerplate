@@ -16,21 +16,6 @@ services:
       - ./server/:/server
       - ignorebackend:/server/node_modules
 
-  frontend:
-      image: node:16
-      container_name: frontend
-      restart: always
-      command: sh -c "yarn && yarn dev"
-      ports:
-      - 3000:3000
-      working_dir: /client
-      links:
-      - postgres
-      volumes:
-      - ./client/:/client
-      - ignorefrontend:/client/node_modules
-
-
   postgres:
     container_name: postgres_container
     image: postgres
@@ -46,5 +31,4 @@ services:
 
 volumes:
   postgres:
-  ignorefrontend:
   ignorebackend:

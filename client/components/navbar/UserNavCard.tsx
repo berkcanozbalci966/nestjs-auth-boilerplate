@@ -18,7 +18,7 @@ function UserNavCard() {
         className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
       >
         <li>
-          <Link href="/">Dashboard</Link>
+          <Link href="/profile">Profile</Link>
         </li>
         <li>
           <Link href="/">Settings</Link>

@@ -7,7 +7,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import fastifyHelmet from '@fastify/helmet';
+import helmet from '@fastify/helmet';
 import fastifyCookie from 'fastify-cookie';
 
 async function bootstrap() {
@@ -29,7 +29,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.register(fastifyHelmet, {
+  app.register(helmet as any, {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: [`'self'`],
@@ -40,16 +40,17 @@ async function bootstrap() {
     },
   });
 
-  // If you are not going to use CSP at all, you can use this:
-  app.register(fastifyHelmet, {
-    contentSecurityPolicy: false,
-  });
-
   await app.register(fastifyCookie, {
     secret: 'my-secret', // for cookies signature
   });
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:4200'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:4200',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3000/',
+      ,
+    ],
     credentials: true,
   });
 

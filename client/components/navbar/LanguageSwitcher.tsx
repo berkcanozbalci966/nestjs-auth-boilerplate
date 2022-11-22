@@ -5,8 +5,6 @@ const LanguageSwitcher = () => {
 
   const { push, asPath, pathname, locale } = useRouter();
 
-  console.log(pathname, locale);
-
   function switchLocale(localeString: string) {
     if (localeString != locale) {
       if (document.activeElement instanceof HTMLElement) {

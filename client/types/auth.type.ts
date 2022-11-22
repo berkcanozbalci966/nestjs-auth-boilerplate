@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export type Login = {
   usernameOrEmail?: string;
   password?: string;
@@ -12,17 +14,14 @@ export type AuthProvider = {
 };
 
 export type AuthContextType = {
-  setAuth: (authInfo: any) => void;
+  setAuth: (authInfo: any, callback?: any) => void;
   logOut: () => void;
-  refresRequestResponse: boolean;
-  setRefreshRequestResponse: (type: boolean) => void;
-  accessRequestResponse: boolean;
-  setAccessRequestResponse: (type: boolean) => void;
   setUser: (user: any) => void;
+  isFirstProfileCall: boolean;
+  setIsFirstProfileCall: Dispatch<SetStateAction<boolean>>;
   auth: {
     name: string;
     isAuth: boolean;
-    accessToken: string;
   };
   user: {
     id: number;

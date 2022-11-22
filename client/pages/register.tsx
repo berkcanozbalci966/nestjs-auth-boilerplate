@@ -35,8 +35,6 @@ function RegisterPage() {
       setUser((prev: any) => ({ ...prev, ...response.user }));
 
       router.push("/");
-
-      console.log(response);
     } catch (error) {
       setAuth((prev: any) => {
         return { ...prev, name: "Error" };
@@ -100,7 +98,7 @@ function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full text-center py-3 rounded btn btn-info text-white mt-4"
+            className="w-full text-center py-3 rounded btn text-white mt-4 bg-primary border-primary"
           >
             "Kayıt ol"
           </button>
@@ -109,8 +107,11 @@ function RegisterPage() {
 
       <div className="text-grey-dark mt-6">
         "Hesabın zaten var mı gardaş?"
-        <Link href={{ pathname: "/login" }}>
-          <a className="no-underline border-b border-blue text-blue">"Login"</a>
+        <Link
+          className="no-underline border-b border-blue text-blue"
+          href={{ pathname: "/login" }}
+        >
+          Login
         </Link>
         .
       </div>

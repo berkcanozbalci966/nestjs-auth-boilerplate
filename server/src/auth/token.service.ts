@@ -4,8 +4,9 @@ import { JwtService } from '@nestjs/jwt';
 
 import { FastifyRequestTypeWithCookie } from './../types/fastify-request-with-cookie.type';
 import { JwtFrom } from '../types/jwt.type';
-import { Cookie } from '../common/enums/auth.enums';
 import { PrismaService } from './../prisma/prisma.service';
+import { COOKIE_NAMES } from '../common/constants/cookie-names.constant';
+import { HEADER_NAMES } from '../common/constants/header-names.constant';
 
 @Injectable()
 export class TokenService {
@@ -13,7 +14,7 @@ export class TokenService {
   getAccessToken(jwtPayload: any): Promise<string> {
     return this.jwtService.signAsync(jwtPayload, {
       secret: jwtConstants.at_secret,
-      expiresIn: '1m',
+      expiresIn: '5s',
     });
   }
 
@@ -33,30 +34,34 @@ export class TokenService {
     return Buffer.from(token, 'base64').toString('ascii');
   }
 
-  extractJwtFromAuthHeader(req: any) {
+  extractJwtFromAuthHeaderWithName(req: any, headerName: string) {
     try {
-      const refreshToken = req?.headers?.authorization
-        .replace('Bearer', '')
-        .trim();
+      const token = req?.headers?.[headerName].replace('Bearer', '').trim();
 
-      const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
+      const decodedToken =
+        headerName == HEADER_NAMES.REFRESH_TOKEN
+          ? this.decodeRefreshToken(token)
+          : token;
 
-      if (decodedRefreshToken) {
-        return decodedRefreshToken;
+      if (decodedToken) {
+        return decodedToken;
       }
     } catch (error) {
       throw new BadRequestException();
     }
   }
 
-  extractJwtFromCookie(req: any) {
+  extractJwtFromCookieWithName(req: any, cookieName: string) {
     try {
-      const refreshToken = req.cookies[Cookie.REFRESH_TOKEN] || undefined;
+      const token = req.cookies[cookieName] || undefined;
 
-      const decodedRefreshToken = this.decodeRefreshToken(refreshToken);
+      const decodedToken =
+        cookieName == COOKIE_NAMES.REFRESH_TOKEN
+          ? this.decodeRefreshToken(token)
+          : token;
 
-      if (decodedRefreshToken) {
-        return decodedRefreshToken;
+      if (decodedToken) {
+        return decodedToken;
       }
       return null;
     } catch (error) {
@@ -64,30 +69,43 @@ export class TokenService {
     }
   }
 
-  detectJwtFrom(req: FastifyRequestTypeWithCookie): JwtFrom {
-    if (req?.cookies[Cookie.REFRESH_TOKEN]) {
+  detectJwtFrom(
+    req: FastifyRequestTypeWithCookie,
+    cookieName: string,
+    headerName: string,
+  ): JwtFrom {
+    if (req?.cookies[cookieName]) {
       return 'cookie';
     }
 
-    if (req?.headers && req?.headers['authorization']) {
+    if (req?.headers && req?.headers[headerName]) {
       return 'header';
     }
   }
 
-  getJwt(jwtFrom: JwtFrom, req: FastifyRequestTypeWithCookie) {
+  getJwt(
+    jwtFrom: JwtFrom,
+    req: FastifyRequestTypeWithCookie,
+    cookieName: string,
+    headerName: string,
+  ) {
     if (jwtFrom == 'cookie') {
-      return this.extractJwtFromCookie(req);
+      return this.extractJwtFromCookieWithName(req, cookieName);
     }
 
     if (jwtFrom == 'header') {
-      return this.extractJwtFromAuthHeader(req);
+      return this.extractJwtFromAuthHeaderWithName(req, headerName);
     }
     return null;
   }
 
-  detectJwtFromAndGetJWT(req: FastifyRequestTypeWithCookie) {
-    const jwtFRom: JwtFrom = this.detectJwtFrom(req);
-    const jwt = this.getJwt(jwtFRom, req);
+  detectJwtFromAndGetJWT(
+    req: FastifyRequestTypeWithCookie,
+    cookieName: string,
+    headerName: string,
+  ) {
+    const jwtFRom: JwtFrom = this.detectJwtFrom(req, cookieName, headerName);
+    const jwt = this.getJwt(jwtFRom, req, cookieName, headerName);
     return jwt;
   }
 

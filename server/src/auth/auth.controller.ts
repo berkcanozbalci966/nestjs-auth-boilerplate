@@ -17,10 +17,10 @@ import { Public } from '../common/decorators/public.decorator';
 import { RtGuard } from '../common/guards';
 import { LoginUserDto } from './dto/login-user.dto';
 import { FastifyRequestTypeWithCookie } from './../types/fastify-request-with-cookie.type';
-import { Cookie } from '../common/enums/auth.enums';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ForgetPasswordUserDto } from './dto/forget-password-user.dto';
 import { ChangePasswordUserDto } from './dto/change-password-user.dto';
+import { COOKIE_NAMES } from '../common/constants/cookie-names.constant';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -36,11 +36,18 @@ export class AuthController {
     const { user, refreshToken, accessToken } = await this.authService.signup(
       body,
     );
-    response.setCookie(Cookie.REFRESH_TOKEN, refreshToken, {
+    response.setCookie(COOKIE_NAMES.REFRESH_TOKEN, refreshToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
     });
+
+    response.setCookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
     return new UserEntity({
       accessToken,
       refreshToken,
@@ -56,7 +63,13 @@ export class AuthController {
   ) {
     const tokens = await this.authService.login(dto);
 
-    response.setCookie(Cookie.REFRESH_TOKEN, tokens.refreshToken, {
+    response.setCookie(COOKIE_NAMES.REFRESH_TOKEN, tokens.refreshToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
+    response.setCookie(COOKIE_NAMES.ACCESS_TOKEN, tokens.accessToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
@@ -70,7 +83,8 @@ export class AuthController {
   @Get('/logout')
   async logOut(@Request() req, @Res({ passthrough: true }) res) {
     await this.authService.logOut(req.user.sub);
-    res.clearCookie(Cookie.REFRESH_TOKEN);
+    res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN);
+    res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN);
     return 'yes';
   }
 
@@ -82,8 +96,22 @@ export class AuthController {
   @Public()
   @Post('/refresh')
   @UseGuards(RtGuard)
-  refreshTokens(@Request() req) {
-    return this.authService.refreshAccessToken(req.user, req.user.refreshToken);
+  async refreshTokens(
+    @Request() req,
+    @Res({ passthrough: true }) response: FastifyRequestTypeWithCookie,
+  ) {
+    const { accessToken } = await this.authService.refreshAccessToken(
+      req.user,
+      req.user.refreshToken,
+    );
+
+    response.setCookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
+    return accessToken;
   }
 
   @Public()

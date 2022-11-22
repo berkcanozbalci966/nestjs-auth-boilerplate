@@ -6,17 +6,13 @@ type Provider = {
 };
 
 type GeneralContextType = {
-  setFirstRender: (state: boolean) => void;
-  generalState: {
-    firstRender: boolean;
-  };
+  setSelectedCategory: (state: number) => void;
+
   language: string;
+  selectedCategory: number;
 };
 
 const initialValue = {
-  generalState: {
-    firstRender: true,
-  },
   language: "tr",
 };
 
@@ -28,6 +24,7 @@ export const GeneralContextProvider: React.FC<Provider> = ({ children }) => {
   const [firstRender, setFirstRender] = useState(true);
   const router = useRouter();
   const [language, setLanguage] = useState(router.locale as string);
+  const [selectedCategory, setSelectedCategory] = useState(0);
 
   useEffect(() => {
     setLanguage(router?.locale as string);
@@ -35,7 +32,11 @@ export const GeneralContextProvider: React.FC<Provider> = ({ children }) => {
 
   return (
     <GeneralContext.Provider
-      value={{ generalState: { firstRender }, setFirstRender, language }}
+      value={{
+        language,
+        selectedCategory,
+        setSelectedCategory,
+      }}
     >
       {children}
     </GeneralContext.Provider>

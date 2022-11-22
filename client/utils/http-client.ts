@@ -1,14 +1,19 @@
 import axios, { AxiosResponse, AxiosInstance, AxiosRequestConfig } from "axios";
 
+async function refreshTokenRequest() {
+  return await axios.post("/auth/refresh", {}, config);
+}
+
+const config: AxiosRequestConfig = {
+  baseURL: "http://127.0.0.1:3600",
+  withCredentials: true,
+  headers: {
+    "Content-type": "application/json",
+  },
+};
+
 export default class HttpClient {
-  private config: AxiosRequestConfig = {
-    baseURL: "http://localhost:3600/",
-    withCredentials: true,
-    headers: {
-      "Content-type": "application/json",
-    },
-  };
-  private _axios: AxiosInstance = axios.create(this.config);
+  private _axios: AxiosInstance = axios.create(config);
 
   constructor() {
     this._axios.interceptors.response.use(
@@ -46,22 +51,12 @@ export default class HttpClient {
   async errorResponseInterceptor(axiosError: any) {
     const prevRequest = axiosError?.config;
 
-    if (
-      axiosError?.response?.status === 401 &&
-      !prevRequest?.sent &&
-      prevRequest.url == "/auth/profile"
-    ) {
+    if (axiosError?.response?.status === 401 && !prevRequest?.sent) {
       prevRequest.sent = true;
-      const refreshToken = await this.refreshTokenRequest();
-      prevRequest.headers["Authorization"] = `Bearer ${refreshToken}`;
-
-      return this._axios(prevRequest);
+      await refreshTokenRequest();
+      return await this._axios(prevRequest);
     }
 
     return Promise.reject(axiosError);
-  }
-
-  async refreshTokenRequest() {
-    return await this._axios.post("/auth/refresh");
   }
 }

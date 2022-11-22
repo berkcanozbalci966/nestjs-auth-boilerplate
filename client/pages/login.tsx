@@ -37,8 +37,6 @@ function Register() {
         setUser((prev: any) => ({ ...prev, ...user }));
         toastEmitter("info", "başarıyla giriş yapıldı");
         router.push("/");
-
-        console.log(response);
       });
     } catch (error) {
       toastEmitter("error", "Giriş yapılamadı");
@@ -75,7 +73,7 @@ function Register() {
           {errors.password && <AlertComponent message="Password error!" />}
           <button
             type="submit"
-            className="w-full text-center py-3 rounded btn btn-info text-white mt-4"
+            className="w-full text-center py-3 rounded btn text-white mt-4 bg-primary border-primary"
             disabled={LoginButtonDisable}
           >
             {"Login"}

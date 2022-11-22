@@ -11,6 +11,10 @@ class AuthService {
   async register(formData: any) {
     return await httpClient.post("/auth/signup", formData);
   }
+
+  async profile() {
+    return await httpClient.get("/auth/profile");
+  }
 }
 
 export default AuthService;

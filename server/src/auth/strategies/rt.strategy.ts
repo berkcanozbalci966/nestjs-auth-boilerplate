@@ -6,6 +6,8 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TokenService } from '../token.service';
 import { FastifyRequestTypeWithCookie } from './../../types/fastify-request-with-cookie.type';
+import { COOKIE_NAMES } from '../../common/constants/cookie-names.constant';
+import { HEADER_NAMES } from '../../common/constants/header-names.constant';
 
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -15,7 +17,11 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   ) {
     super({
       jwtFromRequest: (req: FastifyRequestTypeWithCookie) => {
-        return this.tokenService.detectJwtFromAndGetJWT(req);
+        return this.tokenService.detectJwtFromAndGetJWT(
+          req,
+          COOKIE_NAMES.REFRESH_TOKEN,
+          HEADER_NAMES.REFRESH_TOKEN,
+        );
       },
       secretOrKey: jwtConstants.rt_secret,
       passReqToCallback: true,
@@ -23,7 +29,11 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   }
 
   validate(req: FastifyRequestTypeWithCookie, payload: any) {
-    const refreshToken = this.tokenService.detectJwtFromAndGetJWT(req);
+    const refreshToken = this.tokenService.detectJwtFromAndGetJWT(
+      req,
+      COOKIE_NAMES.REFRESH_TOKEN,
+      HEADER_NAMES.REFRESH_TOKEN,
+    );
 
     if (!refreshToken) throw new ForbiddenException('Refresh token malformed');
 
